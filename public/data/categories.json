@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1098,
+    "name": "TOP SELLERS"
+  },
+  {
+    "id": 991,
+    "name": "PROMOS"
+  },
+  {
+    "id": 1125,
+    "name": "2X1"
+  },
+  {
+    "id": 799,
+    "name": "VERDURAS",
+    "subcategories": [
+      {
+        "id": 822,
+        "name": "FIAMBRES",
+        "subcategories": [
+          { "id": 957, "name": "ASADO TIRA" },
+          { "id": 959, "name": "ASADO BANDERITA" },
+          { "id": 956, "name": "ASADO DEL MEDIO" },
+          { "id": 930, "name": "BIFE DE CHORIZO" },
+          { "id": 936, "name": "OJO DE BIFE" },
+          { "id": 931, "name": "COLITA DE CUADRIL" },
+          { "id": 932, "name": "ENTRAÑA" },
+          { "id": 934, "name": "LOMO" },
+          { "id": 939, "name": "TOMAHAWK" },
+          { "id": 940, "name": "VACIO" },
+          { "id": 935, "name": "MATAMBRE" },
+          { "id": 1149, "name": "PICAÑA" },
+          { "id": 933, "name": "HAMBURGUESA" }
+        ]
+      },
+      {
+        "id": 821,
+        "name": "ARTICULOS VARIOS",
+        "subcategories": [
+          { "id": 923, "name": "BONDIOLA" },
+          { "id": 925, "name": "MATAMBRITO" }
+        ]
+      },
+      {
+        "id": 820,
+        "name": "ACHURAS Y EMBUTIDOS"
+      },
+      {
+        "id": 1066,
+        "name": "BOX COCINA"
+      }
+    ]
+  },
+  {
+    "id": 798,
+    "name": "FRUTAS"
+  },
+  {
+    "id": 797,
+    "name": "VINOS",
+    "subcategories": [
+      {
+        "id": 1101,
+        "name": "BOX VINO"
+      },
+      {
+        "id": 817,
+        "name": "VINO TINTO",
+        "subcategories": [
+          { "id": 912, "name": "MALBEC" },
+          { "id": 911, "name": "CABERNET SAUVIGNON" },
+          { "id": 908, "name": "BLEND" },
+          { "id": 913, "name": "MERLOT" },
+          { "id": 910, "name": "CABERNET FRANC" },
+          { "id": 914, "name": "PINOT NOIR" }
+        ]
+      },
+      {
+        "id": 815,
+        "name": "VINO BLANCO",
+        "subcategories": [
+          { "id": 903, "name": "CHARDONNAY" },
+          { "id": 905, "name": "SAUVIGNON BLANC" },
+          { "id": 901, "name": "BLANCO DULCE" }
+        ]
+      },
+      {
+        "id": 816,
+        "name": "VINO ROSADO"
+      },
+      {
+        "id": 814,
+        "name": "ESPUMANTE",
+        "subcategories": [
+          { "id": 892, "name": "MUMM" },
+          { "id": 897, "name": "SALENTEIN" },
+          { "id": 898, "name": "TRAPICHE" },
+          { "id": 899, "name": "TRUMPETER" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 795,
+    "name": "CERVEZAS Y SPIRITS",
+    "subcategories": [
+      {
+        "id": 812,
+        "name": "SPIRITS"
+      },
+      {
+        "id": 808,
+        "name": "CERVEZAS",
+        "subcategories": [
+          { "id": 849, "name": "AMSTEL" },
+          { "id": 850, "name": "BLUE MOON" },
+          { "id": 852, "name": "GROLSCH" },
+          { "id": 853, "name": "HEINEKEN" },
+          { "id": 854, "name": "IMPERIAL" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 793,
+    "name": "ALMACEN",
+    "subcategories": [
+      {
+        "id": 803,
+        "name": "CARBON, LEÑA Y HIELO"
+      },
+      {
+        "id": 840,
+        "name": "PAN"
+      },
+      {
+        "id": 802,
+        "name": "BEBIDAS SIN ALCOHOL",
+        "subcategories": [{ "id": 837, "name": "GASEOSAS" }]
+      },
+      {
+        "id": 994,
+        "name": "PROVOLETA y QUESOS"
+      },
+      {
+        "id": 800,
+        "name": "OTROS"
+      }
+    ]
+  },
+  {
+    "id": 796,
+    "name": "POSTRES",
+    "subcategories": [
+      {
+        "id": 1038,
+        "name": "HELADOS"
+      }
+    ]
+  }
+]
