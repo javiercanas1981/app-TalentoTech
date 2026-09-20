@@ -5,7 +5,7 @@ import "./Footer.css";
  *
  * Incluye la leyenda de copyright de la aplicación y los enlaces de navegación a redes sociales.
  *
- * @returns {JSX.Element} Pie pie la pagina de la aplicación.
+ * @returns {JSX.Element} Pie de pagina de la aplicación.
  */
 function Footer() {
   return (
