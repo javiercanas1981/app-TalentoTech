@@ -1,0 +1,96 @@
+.product-table-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.product-table-header h2 {
+  margin: 0;
+}
+
+.product-table-header p {
+  margin: 5px 0 0;
+  color: #777;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid #ddd;
+}
+
+.product-table th,
+.product-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.product-table th {
+  background: #f5f5f5;
+  font-weight: bold;
+}
+
+.product-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.product-table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.product-table-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.product-table-actions .delete-button {
+  background: #dc3545;
+}
+
+.product-table-actions button:hover {
+  opacity: 0.85;
+}
+
+.product-table-empty {
+  text-align: center !important;
+  padding: 30px !important;
+  color: #777;
+}
+
+.product-new-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: #198754;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.product-new-button:hover {
+  background: #157347;
+}
+
+@media (max-width: 800px) {
+  .product-table {
+    font-size: 14px;
+  }
+
+  .product-table th,
+  .product-table td {
+    padding: 8px;
+  }
+
+  .product-table-actions {
+    flex-direction: column;
+  }
+}

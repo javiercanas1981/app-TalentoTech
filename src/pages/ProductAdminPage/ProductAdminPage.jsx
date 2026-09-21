@@ -1,30 +1,38 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/ProductForm/ProductForm";
 import ProductTable from "../../components/ProductTable/ProductTable";
 
 /**
  * Página de administración de productos.
  *
- * Coordina las operaciones de creación, edición y eliminación
- * de productos mediante el formulario y la tabla de administración.
+ * Visualiza el listado de productos y gestionar
+ * las operaciones de creación, edición y eliminación.
  *
- * Mantiene en su estado el producto seleccionado para edición
- * y proporciona los callbacks necesarios a los componentes hijos.
+ * Muestra la tabla de productos por defecto y permite
+ * cambiar al formulario para crear un nuevo producto
+ * o editar uno existente.
  *
  * @returns {JSX.Element} Página de administración de productos.
  */
 function ProductAdminPage() {
   const [editingProduct, setEditingProduct] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
-  const navigate = useNavigate();
+  const handleNew = () => {
+    setEditingProduct(null);
+    setShowForm(true);
+  };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
+    setShowForm(true);
   };
 
   const handleSave = (product) => {
     console.log("Guardar:", product);
+
+    setShowForm(false);
+    setEditingProduct(null);
   };
 
   const handleDelete = (id) => {
@@ -32,21 +40,28 @@ function ProductAdminPage() {
   };
 
   const handleCancel = () => {
-    navigate("/productos");
+    setShowForm(false);
+    setEditingProduct(null);
   };
 
   return (
     <div className="product-admin">
       <h1>Administración de productos</h1>
 
-      <ProductForm
-        key={editingProduct?.id ?? "new"}
-        product={editingProduct}
-        onSave={handleSave}
-        onCancel={handleCancel}
-      />
-
-      <ProductTable onEdit={handleEdit} onDelete={handleDelete} />
+      {showForm ? (
+        <ProductForm
+          key={editingProduct?.id ?? "new"}
+          product={editingProduct}
+          onSave={handleSave}
+          onCancel={handleCancel}
+        />
+      ) : (
+        <ProductTable
+          onNew={handleNew}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }

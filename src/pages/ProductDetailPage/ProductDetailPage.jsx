@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "../../context/useCart";
-import { getProduct } from "../../services/ProductService";
+import { getProduct } from "../../services/productService";
 import "./ProductDetailPage.css";
 
 /**
