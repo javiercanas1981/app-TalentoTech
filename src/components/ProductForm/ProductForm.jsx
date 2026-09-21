@@ -26,7 +26,6 @@ import "./ProductForm.css";
 function ProductForm({ product, onSave, onCancel }) {
   const [form, setForm] = useState(() => ({
     ...(product || Product),
-    tags: product?.tags ? [...product.tags] : [],
   }));
 
   const [tagsInput, setTagsInput] = useState(
