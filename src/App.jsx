@@ -41,7 +41,7 @@ function App() {
             {/* Administración de productos */}
             <Route path="/admin/productos" element={<ProductAdminPage />} />
 
-            {/* fuerza redirigilo al inicio para cualquier ruta que no exista*/}
+            {/* fuerza redirigir al inicio para cualquier ruta que no exista*/}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Layout>
