@@ -34,14 +34,6 @@ function ProductDetailPage() {
       });
   }, [id]);
 
-  if (!product) {
-    return (
-      <div className="product-detail-container">
-        <p className="product-detail-loading">Cargando producto...</p>
-      </div>
-    );
-  }
-
   const productInCart = isInCart(product.id);
   const quantity = getItemQuantity(product.id);
 
