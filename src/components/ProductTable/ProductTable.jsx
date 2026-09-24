@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./ProductTable.css";
 
 import { useEffect } from "react";
+import { notificationService } from "../../services/NotificationService";
 import { getProducts } from "../../services/productService";
 import "./ProductTable.css";
 
@@ -30,6 +31,7 @@ function ProductTable({ onNew, onEdit, onDelete }) {
       })
       .catch((error) => {
         console.error(error);
+        notificationService.showError("No se pudieron cargar los productos.");
       })
       .finally(() => {
         setLoading(false);

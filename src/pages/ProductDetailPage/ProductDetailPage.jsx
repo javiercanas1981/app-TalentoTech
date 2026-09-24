@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "../../context/useCart";
+import { notificationService } from "../../services/NotificationService";
 import { getProduct } from "../../services/productService";
 import "./ProductDetailPage.css";
 
@@ -26,6 +27,7 @@ function ProductDetailPage() {
       })
       .catch((error) => {
         console.error("Error cargando producto:", error);
+        notificationService.showError("No se pudieron cargar los productos.");
       });
   }, [id]);
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../../services/ProductService";
 
+import { notificationService } from "../../services/NotificationService";
+import { getProducts } from "../../services/productService";
 import Item from "../Item/Item";
 import "./ItemContainer.css";
 
@@ -24,6 +25,7 @@ function ItemContainer() {
       })
       .catch((error) => {
         console.error("Error cargando productos:", error);
+        notificationService.showError("No se pudieron cargar los productos.");
       });
   }, []);
 
