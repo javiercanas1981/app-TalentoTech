@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
 
@@ -15,12 +16,14 @@ import Header from "../Header/Header";
  *
  * @returns {JSX.Element} Estructura principal de la aplicación.
  */
-export const Layout = ({ children }) => {
+export const Layout = () => {
   return (
     <div>
       <Header />
 
-      <main>{children}</main>
+      <main>
+        <Outlet />
+      </main>
 
       <Footer />
     </div>
