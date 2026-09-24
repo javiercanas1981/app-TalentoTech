@@ -14,6 +14,8 @@ import "./ProductDetailPage.css";
  * @returns {JSX.Element} Página con el detalle del producto.
  */
 function ProductDetailPage() {
+  const [loader, setLoader] = useState(true);
+
   const { id } = useParams();
 
   const [product, setProduct] = useState(null);
@@ -21,6 +23,7 @@ function ProductDetailPage() {
   const { addToCart, removeFromCart, isInCart, getItemQuantity } = useCart();
 
   useEffect(() => {
+    setLoader(false);
     getProduct(id)
       .then((data) => {
         setProduct(data);
@@ -50,7 +53,9 @@ function ProductDetailPage() {
     removeFromCart(product.id);
   };
 
-  return (
+  return loader ? (
+    <p className="product-detail-loading">Cargando...</p>
+  ) : (
     <div className="product-detail-container">
       <div className="product-detail-card">
         {/* Imagen */}
