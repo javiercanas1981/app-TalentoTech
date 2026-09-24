@@ -1,8 +1,7 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 import { Layout } from "./components/Layout/Layout";
-import { CartProvider } from "./context/CartProvider";
 
 import { useEffect, useState } from "react";
 import SnackBar from "./components/SnackBar/SnackBar";
@@ -50,27 +49,25 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <CartProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<IndexPage />} />
-            <Route path="/producto/:id" element={<ProductDetailPage />} />
-            <Route path="/carrito" element={<CartPage />} />
-            {/* Administración de productos */}
-            <Route path="/admin/productos" element={<ProductAdminPage />} />
-            {/* fuerza redirigir al inicio para cualquier ruta que no exista*/}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
-        <SnackBar
-          open={openSnackBar}
-          message={messageSnackBar}
-          severity={severity}
-          onClose={handleCloseSnackBar}
-        />
-      </CartProvider>
-    </BrowserRouter>
+    <>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<IndexPage />} />
+          <Route path="/producto/:id" element={<ProductDetailPage />} />
+          <Route path="/carrito" element={<CartPage />} />
+          {/* Administración de productos */}
+          <Route path="/admin/productos" element={<ProductAdminPage />} />
+          {/* fuerza redirigir al inicio para cualquier ruta que no exista*/}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+      <SnackBar
+        open={openSnackBar}
+        message={messageSnackBar}
+        severity={severity}
+        onClose={handleCloseSnackBar}
+      />
+    </>
   );
 }
 
