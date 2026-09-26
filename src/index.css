@@ -75,6 +75,18 @@ h1 {
   margin: 32px 0;
 }
 
+main h1 {
+  margin: 0 0 16px;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+main > .product-admin {
+  margin-top: 30px;
+  padding: 20px;
+}
+
 h2 {
   font-size: 24px;
   line-height: 118%;
@@ -133,6 +145,10 @@ code {
     font-size: 30px;
     letter-spacing: -0.8px;
     margin: 16px 0;
+  }
+
+  main h1 {
+    font-size: 26px;
   }
 
   h2 {
