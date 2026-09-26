@@ -48,10 +48,14 @@ body {
   flex-direction: column;
 }
 
-main > * {
+main {
   width: 100%;
   max-width: 1100px;
   margin-inline: auto;
+}
+
+main > * {
+  width: 100%;
 }
 
 /* -------------------------
