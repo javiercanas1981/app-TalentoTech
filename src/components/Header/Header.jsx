@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import "./Header.css";
 
 /**
@@ -10,6 +10,10 @@ import "./Header.css";
  * @returns {JSX.Element} Cabecera con el logo y la navegación principal.
  */
 function Header() {
+  const { pathname } = useLocation();
+  const isProductSection =
+    pathname === "/" || pathname.startsWith("/producto/");
+
   return (
     <header className="header">
       <div className="header-logo__container">
@@ -22,9 +26,11 @@ function Header() {
         </Link>
       </div>
       <nav className="header-navigation">
-        <Link to="/admin/productos">Admin</Link>
-        <Link to="/productos">Productos</Link>
-        <Link to="/carrito">Carrito</Link>
+        <NavLink to="/admin/productos">Admin</NavLink>
+        <NavLink to="/" end className={isProductSection ? "active" : undefined}>
+          Productos
+        </NavLink>
+        <NavLink to="/carrito">Carrito</NavLink>
       </nav>
     </header>
   );
