@@ -23,26 +23,50 @@ function ProductDetailPage() {
   const { addToCart, removeFromCart, isInCart, getItemQuantity } = useCart();
 
   useEffect(() => {
-    setLoader(false);
-    getProduct(id)
-      .then((data) => {
-        setProduct(data);
-      })
-      .catch((error) => {
-        console.error("Error cargando producto:", error);
-        notificationService.showError("No se pudieron cargar los productos.");
-      });
+    let active = true;
+
+    const timer = setTimeout(() => {
+      getProduct(id)
+        .then((data) => {
+          if (active) {
+            setProduct(data);
+            setLoader(false);
+          }
+        })
+        .catch((error) => {
+          console.error("Error cargando producto:", error);
+
+          if (active) {
+            setProduct(null);
+            setLoader(false);
+            notificationService.showError(
+              "No se pudieron cargar los productos.",
+            );
+          }
+        });
+    }, 800);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [id]);
 
-  const productInCart = isInCart(product.id);
-  const quantity = getItemQuantity(product.id);
+  if (!product && !loader) {
+    return <p className="product-detail-loading">Producto no encontrado.</p>;
+  }
+
+  const productInCart = product ? isInCart(product.id) : false;
+  const quantity = product ? getItemQuantity(product.id) : 0;
 
   const handleAddToCart = () => {
     addToCart(product);
   };
 
   const handleRemoveFromCart = () => {
-    removeFromCart(product.id);
+    if (product) {
+      removeFromCart(product.id);
+    }
   };
 
   return loader ? (

@@ -4,6 +4,17 @@
   padding: 20px;
 }
 
+.product-detail-loading {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #555;
+}
+
 .product-detail-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
