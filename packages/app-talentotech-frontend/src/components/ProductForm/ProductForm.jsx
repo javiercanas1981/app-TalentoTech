@@ -26,6 +26,7 @@ import "./ProductForm.css";
 function ProductForm({ product, onSave, onCancel }) {
   const [form, setForm] = useState(() => ({
     ...(product || Product),
+    stock: product?.stock ?? Product.stock,
   }));
 
   const [tagsInput, setTagsInput] = useState(
@@ -48,6 +49,7 @@ function ProductForm({ product, onSave, onCancel }) {
       ...form,
       id: form.id || `prod-${Date.now()}`,
       price: Number(form.price),
+      stock: Number(form.stock),
       rating: Number(form.rating),
       reviewsCount: Number(form.reviewsCount),
       tags: tagsInput
@@ -119,6 +121,20 @@ function ProductForm({ product, onSave, onCancel }) {
             value={form.price}
             onChange={handleChange}
             placeholder="12500"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="stock">Stock *</label>
+          <input
+            id="stock"
+            name="stock"
+            type="number"
+            min="0"
+            step="1"
+            value={form.stock}
+            onChange={handleChange}
             required
           />
         </div>

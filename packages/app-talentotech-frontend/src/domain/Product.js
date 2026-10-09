@@ -6,6 +6,7 @@
  * @property {string} name - Nombre del producto.
  * @property {string} category - Categoría a la que pertenece el producto { Category - SubCategory }.
  * @property {number} price - Precio del producto.
+ * @property {number} stock - Unidades disponibles del producto.
  * @property {string} unit - Unidad de medida del producto, por ejemplo "kg".
  * @property {number} weight - Peso del producto.
  * @property {number} rating - Valoración promedio del producto.
@@ -22,6 +23,7 @@ export const Product = {
   name: "",
   category: "",
   price: 0,
+  stock: 0,
   unit: "kg",
   weight: 0,
   rating: 0,

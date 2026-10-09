@@ -1,6 +1,12 @@
 import { useState } from "react";
 import ProductForm from "../../components/ProductForm/ProductForm";
 import ProductTable from "../../components/ProductTable/ProductTable";
+import { notificationService } from "../../services/NotificationService";
+import {
+  createProduct,
+  deleteProduct,
+  updateProduct,
+} from "../../services/ProductService";
 
 /**
  * Página de administración de productos.
@@ -17,6 +23,7 @@ import ProductTable from "../../components/ProductTable/ProductTable";
 function ProductAdminPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [reloadVersion, setReloadVersion] = useState(0);
 
   const handleNew = () => {
     setEditingProduct(null);
@@ -28,15 +35,38 @@ function ProductAdminPage() {
     setShowForm(true);
   };
 
-  const handleSave = (product) => {
-    console.log("Guardar:", product);
+  const handleSave = async (product) => {
+    try {
+    if (editingProduct) {
+      await updateProduct(editingProduct.id, product);
+      notificationService.showSuccess("Producto actualizado correctamente.");
+    } else {
+      await createProduct(product);
+      notificationService.showSuccess("Producto creado correctamente.");
+    }
 
+    setReloadVersion((version) => version + 1);
     setShowForm(false);
     setEditingProduct(null);
+    } catch (error) {
+    console.error("Error guardando producto:", error);
+    notificationService.showError(
+      `No se pudo guardar el producto. ${error.message}`,
+    );
+    }
   };
 
-  const handleDelete = (id) => {
-    console.log("Eliminar:", id);
+  const handleDelete = async (id) => {
+    try {
+    await deleteProduct(id);
+    notificationService.showSuccess("Producto eliminado correctamente.");
+    setReloadVersion((version) => version + 1);
+    } catch (error) {
+    console.error("Error eliminando producto:", error);
+    notificationService.showError(
+      `No se pudo eliminar el producto. ${error.message}`,
+    );
+    }
   };
 
   const handleCancel = () => {
@@ -57,6 +87,7 @@ function ProductAdminPage() {
         />
       ) : (
         <ProductTable
+          key={reloadVersion}
           onNew={handleNew}
           onEdit={handleEdit}
           onDelete={handleDelete}

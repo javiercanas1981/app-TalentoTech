@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "../../context/useCart";
 import { notificationService } from "../../services/NotificationService";
-import { getProduct } from "../../services/productService";
+import { getProduct } from "../../services/ProductService";
 import "./ProductDetailPage.css";
 
 /**
@@ -20,7 +20,13 @@ function ProductDetailPage() {
 
   const [product, setProduct] = useState(null);
 
-  const { addToCart, removeFromCart, isInCart, getItemQuantity } = useCart();
+  const {
+    addToCart,
+    removeFromCart,
+    isInCart,
+    getItemQuantity,
+    getAvailableStock,
+  } = useCart();
 
   useEffect(() => {
     let active = true;
@@ -58,6 +64,7 @@ function ProductDetailPage() {
 
   const productInCart = product ? isInCart(product.id) : false;
   const quantity = product ? getItemQuantity(product.id) : 0;
+  const availableStock = product ? getAvailableStock(product) : 0;
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -116,7 +123,11 @@ function ProductDetailPage() {
 
             <div className="product-detail-data-item">
               <span>📦 Stock</span>
-              <strong>Disponible</strong>
+              <strong>
+                {product.stock > 0
+                  ? `${product.stock} unidades disponibles`
+                  : "Sin stock"}
+              </strong>
             </div>
           </div>
 
@@ -135,8 +146,13 @@ function ProductDetailPage() {
             <button
               className="product-detail-add-btn"
               onClick={handleAddToCart}
+              disabled={availableStock === 0}
             >
-              {productInCart ? "AGREGAR OTRA UNIDAD" : "AGREGAR AL CARRITO"}
+              {availableStock === 0
+                ? "SIN STOCK DISPONIBLE"
+                : productInCart
+                  ? "AGREGAR OTRA UNIDAD"
+                  : "AGREGAR AL CARRITO"}
             </button>
 
             {productInCart && (

@@ -1,9 +1,6 @@
-import { useState } from "react";
-import "./ProductTable.css";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { notificationService } from "../../services/NotificationService";
-import { getProducts } from "../../services/productService";
+import { getProducts } from "../../services/ProductService";
 import "./ProductTable.css";
 
 /**
@@ -25,17 +22,26 @@ function ProductTable({ onNew, onEdit, onDelete }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
+
     getProducts()
       .then((data) => {
-        setProducts(data);
+        if (active) setProducts(data);
       })
       .catch((error) => {
         console.error(error);
-        notificationService.showError("No se pudieron cargar los productos.");
+        if (active) {
+          notificationService.showError(
+            `No se pudieron cargar los productos. ${error.message}`,
+          );
+        }
       })
       .finally(() => {
-        setLoading(false);
+        if (active) setLoading(false);
       });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleDelete = (id) => {
@@ -69,6 +75,7 @@ function ProductTable({ onNew, onEdit, onDelete }) {
               <th>Nombre</th>
               <th>Categoría</th>
               <th>Precio</th>
+              <th>Stock</th>
               <th>Unidad</th>
               <th>Rating</th>
               <th>Destacado</th>
@@ -85,6 +92,8 @@ function ProductTable({ onNew, onEdit, onDelete }) {
                   <td>{product.category}</td>
 
                   <td>${product.price}</td>
+
+                  <td>{product.stock}</td>
 
                   <td>{product.unit}</td>
 
@@ -109,7 +118,7 @@ function ProductTable({ onNew, onEdit, onDelete }) {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="product-table-empty">
+                <td colSpan="8" className="product-table-empty">
                   No hay productos registrados.
                 </td>
               </tr>

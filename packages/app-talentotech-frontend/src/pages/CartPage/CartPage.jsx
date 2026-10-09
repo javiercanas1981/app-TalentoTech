@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { useCart } from "../../context/useCart";
+import { notificationService } from "../../services/NotificationService";
+import { createOrder } from "../../services/ProductService";
 import "./CartPage.css";
 
 /**
@@ -17,6 +20,75 @@ import "./CartPage.css";
 function CartPage() {
   const { items, subtotal, removeFromCart, clearCart, updateQuantity } =
     useCart();
+  const [checkoutPending, setCheckoutPending] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState(null);
+  const [checkoutAttempt, setCheckoutAttempt] = useState(null);
+  const checkoutLocked = checkoutPending || checkoutAttempt?.uncertain;
+
+  const handleCheckout = async () => {
+    const currentItems = items.map(({ product, quantity }) => ({
+      productId: product.id,
+      quantity,
+    }));
+    const cartSignature = JSON.stringify(currentItems);
+    const attempt = checkoutAttempt?.uncertain
+      ? checkoutAttempt
+      : checkoutAttempt?.cartSignature === cartSignature
+        ? checkoutAttempt
+        : {
+            cartSignature,
+            idempotencyKey: globalThis.crypto.randomUUID(),
+            items: currentItems,
+          };
+
+    setCheckoutAttempt(attempt);
+    setCheckoutPending(true);
+    try {
+      const order = await createOrder(attempt.items, attempt.idempotencyKey);
+      clearCart();
+      setCheckoutAttempt(null);
+      setConfirmedOrder(order);
+      notificationService.showSuccess(
+        `Pedido registrado. Número de orden: ${order.id}`,
+      );
+    } catch (error) {
+      console.error("Error confirmando la compra:", error);
+      notificationService.showError(
+        `No se pudo confirmar la compra. ${error.message}`,
+      );
+      if ([400, 404, 409].includes(error.status)) {
+        setCheckoutAttempt(null);
+      } else {
+        setCheckoutAttempt({ ...attempt, uncertain: true });
+      }
+    } finally {
+      setCheckoutPending(false);
+    }
+  };
+
+  if (confirmedOrder) {
+    return (
+      <div className="cart-container">
+        <div className="empty-cart-msg">
+          <h1>Pedido confirmado</h1>
+          <p>Tu pedido quedó registrado y el stock fue actualizado.</p>
+          <p>El pago no se procesa desde esta aplicación.</p>
+          <p>
+            Número de orden: <strong>{confirmedOrder.id}</strong>
+          </p>
+          <p>
+            Total:{" "}
+            <strong>
+              $
+              {confirmedOrder.total.toLocaleString("es-AR", {
+                minimumFractionDigits: 2,
+              })}
+            </strong>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -65,6 +137,8 @@ function CartPage() {
                         onClick={() =>
                           updateQuantity(item.product.id, item.quantity - 1)
                         }
+                        disabled={checkoutLocked}
+                        aria-label="Reducir cantidad"
                       >
                         -
                       </button>
@@ -76,6 +150,11 @@ function CartPage() {
                         onClick={() =>
                           updateQuantity(item.product.id, item.quantity + 1)
                         }
+                        disabled={
+                          checkoutLocked ||
+                          item.quantity >= (item.product.stock ?? 0)
+                        }
+                        aria-label="Aumentar cantidad"
                       >
                         +
                       </button>
@@ -93,6 +172,7 @@ function CartPage() {
                   <button
                     className="delete-btn"
                     onClick={() => removeFromCart(item.product.id)}
+                    disabled={checkoutLocked}
                     aria-label="Eliminar producto"
                   >
                     🗑️
@@ -128,8 +208,16 @@ function CartPage() {
             </span>
           </div>
 
-          <button className="checkout-btn" onClick={clearCart}>
-            FINALIZAR COMPRA
+          <button
+            className="checkout-btn"
+            onClick={handleCheckout}
+            disabled={checkoutPending}
+          >
+            {checkoutPending
+              ? "PROCESANDO COMPRA..."
+              : checkoutAttempt?.uncertain
+                ? "REINTENTAR CONFIRMACIÓN"
+                : "FINALIZAR COMPRA"}
           </button>
         </aside>
       </div>

@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { CartContext } from "./CartContext";
+import { notificationService } from "../services/NotificationService";
+
+const productStock = (product) =>
+  Number.isInteger(product?.stock) && product.stock >= 0 ? product.stock : 0;
 
 /**
  * Proveedor del contexto del carrito.
@@ -22,12 +26,26 @@ export const CartProvider = ({ children }) => {
    * @returns {void}
    */
   const addToCart = (product, quantity = 1) => {
+    if (!product?.id || !Number.isInteger(quantity) || quantity <= 0) {
+      notificationService.showError("La cantidad a agregar no es válida.");
+      return false;
+    }
+
+    if (quantity > getAvailableStock(product)) {
+      notificationService.showWarning("No hay suficiente stock disponible.");
+      return false;
+    }
+
     setItems((prevItems) => {
       const existingItem = prevItems.find(
         (item) => item.product.id === product.id,
       );
 
       if (existingItem) {
+        if (existingItem.quantity + quantity > productStock(product)) {
+          return prevItems;
+        }
+
         return prevItems.map((item) =>
           item.product.id === product.id
             ? {
@@ -46,6 +64,8 @@ export const CartProvider = ({ children }) => {
         },
       ];
     });
+
+    return true;
   };
 
   /**
@@ -70,14 +90,29 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (productId, quantity) => {
     if (quantity <= 0) {
       removeFromCart(productId);
-      return;
+      return true;
+    }
+
+    if (!Number.isInteger(quantity)) {
+      notificationService.showError("La cantidad debe ser un número entero.");
+      return false;
+    }
+
+    const item = items.find((cartItem) => cartItem.product.id === productId);
+    if (item && quantity > productStock(item.product)) {
+      notificationService.showWarning("No hay suficiente stock disponible.");
+      return false;
     }
 
     setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item,
+      prevItems.map((cartItem) =>
+        cartItem.product.id === productId &&
+        quantity <= productStock(cartItem.product)
+          ? { ...cartItem, quantity }
+          : cartItem,
       ),
     );
+    return true;
   };
 
   const clearCart = () => {
@@ -92,6 +127,11 @@ export const CartProvider = ({ children }) => {
     const item = items.find((item) => item.product.id === productId);
 
     return item?.quantity ?? 0;
+  };
+
+  const getAvailableStock = (product) => {
+    const currentQuantity = getItemQuantity(product?.id);
+    return Math.max(0, productStock(product) - currentQuantity);
   };
 
   const totalItemCount = items.reduce(
@@ -116,6 +156,7 @@ export const CartProvider = ({ children }) => {
 
         isInCart,
         getItemQuantity,
+        getAvailableStock,
 
         totalItemCount,
         subtotal,

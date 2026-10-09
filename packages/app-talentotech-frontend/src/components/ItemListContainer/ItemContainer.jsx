@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { notificationService } from "../../services/NotificationService";
-import { getProducts } from "../../services/productService";
+import { getProducts } from "../../services/ProductService";
 import Item from "../Item/Item";
 import "./ItemContainer.css";
 
@@ -20,7 +20,6 @@ function ItemContainer() {
   useEffect(() => {
     getProducts()
       .then((data) => {
-        console.log("Productos:", data);
         setProducts(data);
       })
       .catch((error) => {

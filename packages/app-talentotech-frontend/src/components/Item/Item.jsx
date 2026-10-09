@@ -20,12 +20,19 @@ import "./Item.css";
  * @returns {JSX.Element} Card del producto.
  */
 function Item({ product }) {
-  const { addToCart, removeFromCart, updateQuantity, getItemQuantity } =
-    useCart();
+  const {
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    getItemQuantity,
+    getAvailableStock,
+  } = useCart();
 
   const navigate = useNavigate();
 
   const quantity = getItemQuantity(product.id);
+  const availableStock = getAvailableStock(product);
+  const hasStock = Number.isInteger(product.stock) && product.stock > 0;
 
   const handleDecrease = () => {
     if (quantity === 1) {
@@ -85,7 +92,12 @@ function Item({ product }) {
 
             <span className="qty-number">{quantity}</span>
 
-            <button className="qty-btn" onClick={handleIncrease}>
+            <button
+              className="qty-btn"
+              onClick={handleIncrease}
+              disabled={availableStock === 0}
+              aria-label="Aumentar cantidad"
+            >
               +
             </button>
           </div>
@@ -93,8 +105,9 @@ function Item({ product }) {
           <button
             className="product-detail-add-btn"
             onClick={() => handleGoToCart(product)}
+            disabled={!hasStock}
           >
-            Comprar
+            {hasStock ? "Comprar" : "Sin stock"}
           </button>
         </div>
       </div>
