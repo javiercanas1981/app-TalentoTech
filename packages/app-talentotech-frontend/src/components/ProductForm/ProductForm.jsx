@@ -118,6 +118,7 @@ function ProductForm({ product, onSave, onCancel }) {
             name="price"
             type="number"
             min="0"
+            step="any"
             value={form.price}
             onChange={handleChange}
             placeholder="12500"

@@ -75,6 +75,16 @@ describe("ProductUseCase", () => {
     ).rejects.toThrow("price");
   });
 
+  test("accepts decimal product prices", async () => {
+    const useCase = new ProductUseCase(createRepository());
+    const created = await useCase.execute({
+      action: "create",
+      data: { ...productInput, price: 12500.75 },
+    });
+
+    expect(created.price).toBe(12500.75);
+  });
+
   test("rejects negative, fractional, and non-numeric stock", async () => {
     const useCase = new ProductUseCase(createRepository());
 
