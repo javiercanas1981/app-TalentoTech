@@ -8,29 +8,29 @@
  * @property {number} price - Precio del producto.
  * @property {number} stock - Unidades disponibles del producto.
  * @property {string} unit - Unidad de medida del producto, por ejemplo "kg".
- * @property {number} weight - Peso del producto.
+ * @property {string} weight - Descripción del peso del producto.
  * @property {number} rating - Valoración promedio del producto.
  * @property {number} reviewsCount - Cantidad de reseñas del producto.
- * @property {string} imagePath - Ruta de la imagen del producto.
- * @property {string} desc - Descripción del producto.
- * @property {string} coockingTip - Consejo de cocción o preparación del producto.
+ * @property {string} image - URL de la imagen del producto.
+ * @property {string} description - Descripción del producto.
+ * @property {string} cookingTip - Consejo de cocción o preparación del producto.
  * @property {string[]} tags - Etiquetas asociadas al producto.
- * @property {boolean} isFeature - Indica si el producto es destacado.
+ * @property {boolean} isFeatured - Indica si el producto es destacado.
  */
 
-export const Product = {
+export const ProductDefaults = {
   id: "",
   name: "",
   category: "",
   price: 0,
   stock: 0,
   unit: "kg",
-  weight: 0,
+  weight: "",
   rating: 0,
   reviewsCount: 0,
-  imagePath: "",
-  desc: "",
-  coockingTip: "",
+  image: "",
+  description: "",
+  cookingTip: "",
   tags: [],
-  isFeature: false,
+  isFeatured: false,
 };

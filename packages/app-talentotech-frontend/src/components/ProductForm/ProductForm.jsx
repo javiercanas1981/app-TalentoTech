@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Product } from "../../domain/Product";
+import { ProductDefaults } from "../../domain/Product";
 
 import "./ProductForm.css";
 
@@ -25,8 +25,8 @@ import "./ProductForm.css";
  */
 function ProductForm({ product, onSave, onCancel }) {
   const [form, setForm] = useState(() => ({
-    ...(product || Product),
-    stock: product?.stock ?? Product.stock,
+    ...(product || ProductDefaults),
+    stock: product?.stock ?? ProductDefaults.stock,
   }));
 
   const [tagsInput, setTagsInput] = useState(
@@ -61,7 +61,7 @@ function ProductForm({ product, onSave, onCancel }) {
     onSave(productToSave);
 
     if (!product) {
-      setForm(Product);
+      setForm(ProductDefaults);
       setTagsInput("");
     }
   };
