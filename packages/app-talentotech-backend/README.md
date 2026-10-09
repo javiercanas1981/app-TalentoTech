@@ -28,4 +28,4 @@ El frontend consume estos endpoints desde `/api`. Al ejecutar Vite en desarrollo
 
 ## Cargar el catálogo inicial
 
-El catálogo de semilla está en `data/products.json`. Para validar los datos sin escribir en Firestore, ejecuta `npm run seed:products`. Para crear o actualizar los documentos con los mismos IDs del archivo, ejecuta `npm run seed:products -- --apply` desde esta carpeta. La sincronización reemplaza los campos de los documentos `prod-*` coincidentes y no elimina documentos adicionales de la colección.
+El catálogo de semilla está en `data/products.json`. Para validar los datos sin escribir en Firestore, ejecuta `npm run seed:products`. Para crear o actualizar los documentos con los mismos IDs del archivo, ejecuta `npm run seed:products -- --apply` desde esta carpeta. El comando vive en `bootstrap/src/SeedProductsCommand.js` y compone el caso de uso `SeedProductsUseCase`; el caso de uso accede a Firestore exclusivamente mediante el puerto `ProductRepository`. La sincronización reemplaza los campos de los documentos `prod-*` coincidentes y no elimina documentos adicionales de la colección.

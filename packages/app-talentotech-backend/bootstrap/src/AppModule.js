@@ -3,6 +3,7 @@ import { APP_FILTER } from "@nestjs/core";
 import { OrderUseCase } from "../../application/src/use-cases/OrderUseCase.js";
 import { ORDER_REPOSITORY } from "../../domain/src/repositories/OrderRepository.js";
 import { ProductUseCase } from "../../application/src/use-cases/ProductUseCase.js";
+import { SeedProductsUseCase } from "../../application/src/use-cases/SeedProductsUseCase.js";
 import { PRODUCT_REPOSITORY } from "../../domain/src/repositories/ProductRepository.js";
 import { FirestoreBuilder } from "../../infrastructure/src/db/builders/FirestoreBuilder.js";
 import { FirestoreProductRepository } from "../../infrastructure/src/respositories/FirestoreProductRepository.js";
@@ -19,6 +20,7 @@ Module({
   providers: [
     OrderUseCase,
     ProductUseCase,
+    SeedProductsUseCase,
     { provide: APP_FILTER, useClass: ProductExceptionFilter },
     FirestoreProductRepository,
     FirestoreOrderRepository,
