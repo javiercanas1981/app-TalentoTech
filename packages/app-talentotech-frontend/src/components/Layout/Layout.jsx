@@ -1,4 +1,5 @@
-import { Outlet } from "react-router-dom";
+import { useCallback, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
 
@@ -17,12 +18,25 @@ import Header from "../Header/Header";
  * @returns {JSX.Element} Estructura principal de la aplicación.
  */
 export const Layout = () => {
+  const location = useLocation();
+  const [categoryState, setCategoryState] = useState(null);
+  const setHeaderCategory = useCallback(
+    (category) => {
+      setCategoryState({ pathname: location.pathname, category });
+    },
+    [location.pathname],
+  );
+  const category =
+    categoryState?.pathname === location.pathname
+      ? categoryState.category
+      : "";
+
   return (
     <div>
-      <Header />
+      <Header category={category} />
 
       <main>
-        <Outlet />
+        <Outlet context={{ setHeaderCategory }} />
       </main>
 
       <Footer />

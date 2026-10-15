@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import ProductForm from "../../components/ProductForm/ProductForm";
 import ProductTable from "../../components/ProductTable/ProductTable";
 import { notificationService } from "../../services/NotificationService";
@@ -21,17 +22,20 @@ import {
  * @returns {JSX.Element} Página de administración de productos.
  */
 function ProductAdminPage() {
+  const { setHeaderCategory } = useOutletContext();
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [reloadVersion, setReloadVersion] = useState(0);
 
   const handleNew = () => {
     setEditingProduct(null);
+    setHeaderCategory("");
     setShowForm(true);
   };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
+    setHeaderCategory(product.category);
     setShowForm(true);
   };
 
@@ -48,6 +52,7 @@ function ProductAdminPage() {
     setReloadVersion((version) => version + 1);
     setShowForm(false);
     setEditingProduct(null);
+    setHeaderCategory("");
     } catch (error) {
     console.error("Error guardando producto:", error);
     notificationService.showError(
@@ -72,6 +77,7 @@ function ProductAdminPage() {
   const handleCancel = () => {
     setShowForm(false);
     setEditingProduct(null);
+    setHeaderCategory("");
   };
 
   return (
@@ -84,6 +90,7 @@ function ProductAdminPage() {
           product={editingProduct}
           onSave={handleSave}
           onCancel={handleCancel}
+          onCategoryChange={setHeaderCategory}
         />
       ) : (
         <ProductTable

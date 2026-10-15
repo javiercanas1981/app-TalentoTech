@@ -23,7 +23,7 @@ import "./ProductForm.css";
  *
  * @returns {JSX.Element} Formulario para crear o editar un producto.
  */
-function ProductForm({ product, onSave, onCancel }) {
+function ProductForm({ product, onSave, onCancel, onCategoryChange }) {
   const [form, setForm] = useState(() => ({
     ...(product || ProductDefaults),
     stock: product?.stock ?? ProductDefaults.stock,
@@ -40,6 +40,10 @@ function ProductForm({ product, onSave, onCancel }) {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    if (name === "category") {
+      onCategoryChange?.(value);
+    }
   };
 
   const handleSubmit = (event) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { useCart } from "../../context/useCart";
 import { notificationService } from "../../services/NotificationService";
 import { getProduct } from "../../services/ProductService";
@@ -17,6 +17,7 @@ function ProductDetailPage() {
   const [loader, setLoader] = useState(true);
 
   const { id } = useParams();
+  const { setHeaderCategory } = useOutletContext();
 
   const [product, setProduct] = useState(null);
 
@@ -36,6 +37,7 @@ function ProductDetailPage() {
         .then((data) => {
           if (active) {
             setProduct(data);
+            setHeaderCategory(data.category);
             setLoader(false);
           }
         })
@@ -44,6 +46,7 @@ function ProductDetailPage() {
 
           if (active) {
             setProduct(null);
+            setHeaderCategory("");
             setLoader(false);
             notificationService.showError(
               "No se pudieron cargar los productos.",
@@ -56,7 +59,7 @@ function ProductDetailPage() {
       active = false;
       clearTimeout(timer);
     };
-  }, [id]);
+  }, [id, setHeaderCategory]);
 
   if (!product && !loader) {
     return <p className="product-detail-loading">Producto no encontrado.</p>;
@@ -92,7 +95,9 @@ function ProductDetailPage() {
 
         {/* Información */}
         <div className="product-detail-info">
-          <span className="product-detail-category">Producto</span>
+          <span className="product-detail-category">
+            {product.category?.trim() || "Sin categoría"}
+          </span>
 
           <h1 className="product-detail-title">{product.name}</h1>
 

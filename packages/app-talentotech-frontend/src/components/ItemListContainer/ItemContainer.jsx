@@ -29,7 +29,7 @@ function ItemContainer() {
   }, []);
 
   return (
-    <div className="product-grid">
+    <div className="product-grid" id="productos">
       {products.map((product) => (
         <Item key={product.id} product={product} />
       ))}
