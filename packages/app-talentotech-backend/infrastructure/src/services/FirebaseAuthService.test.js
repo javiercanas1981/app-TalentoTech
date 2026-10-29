@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
-import {
-  ForbiddenException,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { UnauthorizedException } from "@nestjs/common";
 import { FirebaseAuthService } from "./FirebaseAuthService.js";
 
 const originalApiKey = process.env.API_KEY;
@@ -107,21 +104,6 @@ describe("FirebaseAuthService", () => {
     });
   });
 
-  test("allows only users with the admin Firestore role", async () => {
-    const service = new FirebaseAuthService({});
-    service.getUserProfile = jest
-      .fn()
-      .mockResolvedValueOnce({ role: "user" })
-      .mockResolvedValueOnce({ role: "admin" })
-      .mockResolvedValueOnce({ rol: "admin" });
-
-    await expect(service.requireAdmin({ uid: "user-1" })).rejects.toBeInstanceOf(
-      ForbiddenException,
-    );
-    await expect(service.requireAdmin({ uid: "admin-1" })).resolves.toBeUndefined();
-    await expect(service.requireAdmin({ uid: "legacy-admin" })).resolves.toBeUndefined();
-  });
-
   test("returns role from the Firestore profile when verifying a token", async () => {
     process.env.API_KEY = "web-api-key";
     jest.spyOn(globalThis, "fetch").mockResolvedValue({
@@ -138,7 +120,7 @@ describe("FirebaseAuthService", () => {
     const service = new FirebaseAuthService({});
     service.getUserProfile = jest.fn().mockResolvedValue({
       name: "Site Admin",
-      rol: "admin",
+      role: "admin",
     });
 
     await expect(

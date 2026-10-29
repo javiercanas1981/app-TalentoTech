@@ -2,6 +2,7 @@ import { Catch, HttpException, HttpStatus } from "@nestjs/common";
 import { InsufficientStockError } from "../../../application/src/errors/InsufficientStockError.js";
 import { ProductNotFoundError } from "../../../application/src/errors/ProductNotFoundError.js";
 import { ProductValidationError } from "../../../application/src/errors/ProductValidationError.js";
+import { AdminAuthorizationError } from "../../../application/src/errors/AdminAuthorizationError.js";
 
 export class ProductExceptionFilter {
   catch(exception, host) {
@@ -12,12 +13,13 @@ export class ProductExceptionFilter {
     }
 
     const isNotFound = exception instanceof ProductNotFoundError;
+    const isForbidden = exception instanceof AdminAuthorizationError;
     const isStockConflict = exception instanceof InsufficientStockError;
     const isBadRequest =
       exception instanceof ProductValidationError ||
       exception instanceof TypeError;
 
-    if (!isNotFound && !isStockConflict && !isBadRequest) {
+    if (!isNotFound && !isForbidden && !isStockConflict && !isBadRequest) {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: "Internal server error",
@@ -27,6 +29,8 @@ export class ProductExceptionFilter {
 
     const statusCode = isNotFound
       ? HttpStatus.NOT_FOUND
+      : isForbidden
+        ? HttpStatus.FORBIDDEN
       : isStockConflict
         ? HttpStatus.CONFLICT
         : HttpStatus.BAD_REQUEST;
@@ -35,6 +39,8 @@ export class ProductExceptionFilter {
       message: exception.message,
       error: isNotFound
         ? "Not Found"
+        : isForbidden
+          ? "Forbidden"
         : isStockConflict
           ? "Conflict"
           : "Bad Request",

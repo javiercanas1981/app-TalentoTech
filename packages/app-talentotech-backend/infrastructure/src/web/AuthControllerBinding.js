@@ -17,8 +17,8 @@ import {
 import { EmailPasswordDto } from "../../../application/src/use-cases/dtos/EmailPasswordDto.js";
 import { RegisterDto } from "../../../application/src/use-cases/dtos/RegisterDto.js";
 import { AuthController } from "./AuthController.js";
-import { FirebaseAuthGuard } from "./FirebaseAuthGuard.js";
-import { FirebaseAuthService } from "./FirebaseAuthService.js";
+import { FirebaseAuthGuard } from "../guards/FirebaseAuthGuard.js";
+import { FirebaseAuthService } from "../services/FirebaseAuthService.js";
 
 const prototype = AuthController.prototype;
 

@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { ProductRepository } from "../../../domain/src/repositories/ProductRepository.js";
 import { ProductDbMapper } from "../db/mappers/ProductDbMapper.js";
-import { FIRESTORE } from "../web/tokens.js";
+import { FIRESTORE } from "../di/tokens.js";
 
 const PRODUCTS_COLLECTION = "products";
 const productMapper = new ProductDbMapper();

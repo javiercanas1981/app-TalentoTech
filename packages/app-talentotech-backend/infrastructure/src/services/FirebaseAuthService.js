@@ -2,28 +2,18 @@ import {
   Inject,
   ServiceUnavailableException,
   UnauthorizedException,
-  ForbiddenException,
   ConflictException,
   BadRequestException,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import {
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import { FIRESTORE } from "./tokens.js";
+import { USER_REPOSITORY } from "../../../domain/src/repositories/UserRepository.js";
 
 const IDENTITY_TOOLKIT_URL =
   "https://identitytoolkit.googleapis.com/v1/accounts";
 
 const getFirebaseErrorCode = (responseBody) =>
   responseBody?.error?.message?.split(/\s|:/, 1)[0] ?? "";
-
-const getUserRole = (profile) =>
-  (profile.role ?? profile.rol) === "admin" ? "admin" : "user";
 
 const getAuthError = (code, operation) => {
   if (
@@ -81,8 +71,8 @@ const getAuthError = (code, operation) => {
 };
 
 export class FirebaseAuthService {
-  constructor(firestore) {
-    this.firestore = firestore;
+  constructor(userRepository) {
+    this.userRepository = userRepository;
   }
 
   async request(endpoint, body, operation) {
@@ -178,9 +168,8 @@ export class FirebaseAuthService {
   }
 
   async getUserProfile(uid) {
-    let profileSnapshot;
     try {
-      profileSnapshot = await getDoc(doc(this.firestore, "users", uid));
+      return (await this.userRepository.getById(uid)) ?? {};
     } catch (error) {
       throw new ServiceUnavailableException(
         "No se pudo consultar el perfil del usuario en Firestore.",
@@ -188,14 +177,10 @@ export class FirebaseAuthService {
       );
     }
 
-    return profileSnapshot.exists() ? profileSnapshot.data() : {};
   }
 
   saveUserProfile(uid, profile) {
-    return setDoc(doc(this.firestore, "users", uid), {
-      ...profile,
-      createdAt: serverTimestamp(),
-    });
+    return this.userRepository.create(uid, profile);
   }
 
   async verifyIdToken(idToken) {
@@ -214,7 +199,7 @@ export class FirebaseAuthService {
       uid: firebaseUser.localId,
       email: firebaseUser.email ?? "",
       displayName: profile.name ?? firebaseUser.displayName ?? "",
-      role: getUserRole(profile),
+      role: profile.role ?? "user",
     };
   }
 
@@ -224,24 +209,12 @@ export class FirebaseAuthService {
         uid: result.localId,
         email: result.email,
         displayName: profile.name ?? result.displayName ?? "",
-        role: getUserRole(profile),
+        role: profile.role ?? "user",
       },
       idToken: result.idToken,
     };
   }
 
-  async requireAdmin(user) {
-    if (!user?.uid) {
-      throw new UnauthorizedException("Se requiere una sesión válida.");
-    }
-
-    const profile = await this.getUserProfile(user.uid);
-    if (getUserRole(profile) !== "admin") {
-      throw new ForbiddenException(
-        "No tienes permisos de administrador para realizar esta acción.",
-      );
-    }
-  }
 }
 
-Inject(FIRESTORE)(FirebaseAuthService, undefined, 0);
+Inject(USER_REPOSITORY)(FirebaseAuthService, undefined, 0);

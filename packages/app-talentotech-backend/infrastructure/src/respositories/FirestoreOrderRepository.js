@@ -4,7 +4,7 @@ import { InsufficientStockError } from "../../../application/src/errors/Insuffic
 import { ProductNotFoundError } from "../../../application/src/errors/ProductNotFoundError.js";
 import { Stock } from "../../../domain/src/model/Stock.js";
 import { OrderRepository } from "../../../domain/src/repositories/OrderRepository.js";
-import { FIRESTORE } from "../web/tokens.js";
+import { FIRESTORE } from "../di/tokens.js";
 
 const PRODUCTS_COLLECTION = "products";
 const ORDERS_COLLECTION = "orders";

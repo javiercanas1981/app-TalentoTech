@@ -1,5 +1,5 @@
 import { Inject, UnauthorizedException } from "@nestjs/common";
-import { FirebaseAuthService } from "./FirebaseAuthService.js";
+import { FirebaseAuthService } from "../services/FirebaseAuthService.js";
 
 export class FirebaseAuthGuard {
   constructor(authService) {

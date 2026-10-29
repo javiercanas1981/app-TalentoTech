@@ -19,8 +19,8 @@ import {
 import { ProductDto } from "../../../application/src/use-cases/dtos/ProductDto.js";
 import { ProductUseCase } from "../../../application/src/use-cases/ProductUseCase.js";
 import { ProductController } from "./ProductController.js";
-import { FirebaseAuthGuard } from "./FirebaseAuthGuard.js";
-import { AdminRoleGuard } from "./AdminRoleGuard.js";
+import { FirebaseAuthGuard } from "../guards/FirebaseAuthGuard.js";
+import { AdminRoleGuard } from "../guards/AdminRoleGuard.js";
 
 const prototype = ProductController.prototype;
 

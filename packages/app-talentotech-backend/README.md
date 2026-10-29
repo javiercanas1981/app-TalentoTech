@@ -27,6 +27,8 @@ El registro acepta `{ "name": "...", "email": "...", "password": "..." }`, crea 
 
 El inicio de sesión acepta `{ "email": "...", "password": "..." }`; ambos endpoints devuelven un ID token de Firebase y el rol consultado en Firestore. El panel del frontend requiere `role: "admin"`. El backend verifica el ID token y consulta nuevamente el rol en Firestore en cada operación de crear, editar o eliminar productos, respondiendo `403 Forbidden` a usuarios sin rol de administrador. Los endpoints de lectura y pedidos siguen siendo públicos.
 
+La autorización sigue las capas del proyecto: `UserRepository` define el contrato de dominio, `FirestoreUserRepository` implementa el acceso a Firestore, `AdminAuthorizationUseCase` contiene la regla de acceso y `AdminRoleGuard` la aplica en las rutas administrativas. `infrastructure/src/web` contiene únicamente los controllers y sus bindings; servicios de Firebase, guards, filtros y tokens de inyección están separados en `services`, `guards`, `filters` y `di`, respectivamente.
+
 El pedido se confirma enviando `items` con `productId` y `quantity`, más una `idempotencyKey` única. El backend lee los precios y el stock actuales, descuenta inventario y registra la orden en una transacción Firestore. Si no hay stock, responde `409 Conflict` sin modificar ningún producto ni crear la orden. Reintentar con la misma clave devuelve la orden existente sin volver a descontar stock. Este flujo registra el pedido, pero no procesa pagos.
 
 La documentación interactiva de Swagger está disponible en `/api/docs`.
