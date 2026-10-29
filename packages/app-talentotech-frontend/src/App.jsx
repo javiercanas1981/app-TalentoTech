@@ -5,7 +5,7 @@ import { Layout } from "./components/Layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import { useEffect, useState } from "react";
-import AuthModal from "./components/Forms/AuthModal";
+import AuthModal from "./components/Modals/AuthModal";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 import SnackBar from "./components/SnackBar/SnackBar";

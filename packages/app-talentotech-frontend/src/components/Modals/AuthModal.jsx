@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./Forms.css";
+import "./AuthModal.css";
 
 function AuthModal({ children, initialTab, backgroundLocation }) {
   const location = useLocation();
