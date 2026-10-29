@@ -31,18 +31,18 @@ async function request(path, options = {}) {
   return body;
 }
 
-const postCredentials = (path, email, password) =>
+const postCredentials = (path, email, password, name) =>
   request(`/auth/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, ...(name ? { name } : {}) }),
   });
 
 export const signIn = (email, password) =>
   postCredentials("login", email, password);
 
-export const register = (email, password) =>
-  postCredentials("register", email, password);
+export const register = (email, password, name) =>
+  postCredentials("register", email, password, name);
 
 export const getCurrentSession = (idToken) =>
   request("/auth/session", {

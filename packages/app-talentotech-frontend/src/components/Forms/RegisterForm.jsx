@@ -7,6 +7,7 @@ function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +19,7 @@ function RegisterForm() {
     setSubmitting(true);
 
     try {
-      await register(email.trim(), password);
+      await register(email.trim(), password, name.trim());
       navigate(location.state?.from?.pathname ?? "/", { replace: true });
     } catch (registrationError) {
       setError(
@@ -37,6 +38,15 @@ function RegisterForm() {
     >
       <h1 id="register-title">Crear cuenta</h1>
       <form className="auth-form" onSubmit={handleSubmit}>
+        <label htmlFor="register-name">Nombre</label>
+        <input
+          id="register-name"
+          type="text"
+          autoComplete="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          required
+        />
         <label htmlFor="register-email">Correo electrónico</label>
         <input
           id="register-email"

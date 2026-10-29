@@ -30,10 +30,10 @@ describe("AuthService", () => {
       signIn("person@example.com", "password123"),
     ).resolves.toEqual(session);
     await expect(
-      register("person@example.com", "password123"),
+      register("person@example.com", "password123", "Person Example"),
     ).resolves.toEqual(session);
 
-    const expectedRequest = {
+    const loginRequest = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -41,7 +41,23 @@ describe("AuthService", () => {
         password: "password123",
       }),
     };
-    expect(fetchMock).toHaveBeenNthCalledWith(1, "/api/auth/login", expectedRequest);
-    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/auth/register", expectedRequest);
+    const registerRequest = {
+      ...loginRequest,
+      body: JSON.stringify({
+        email: "person@example.com",
+        password: "password123",
+        name: "Person Example",
+      }),
+    };
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "/api/auth/login",
+      loginRequest,
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "/api/auth/register",
+      registerRequest,
+    );
   });
 });

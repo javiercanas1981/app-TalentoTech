@@ -23,7 +23,7 @@ Ejecuta `npm install` y luego `npm run dev` desde esta carpeta. El servidor escu
 El cuerpo para crear y actualizar acepta `name`, `category`, `price`, `unit`, `image` y `description`; `weight`, `rating`, `reviewsCount`, `cookingTip`, `tags` e `isFeatured` son opcionales.
 `stock` es opcional y debe ser un entero mayor o igual a cero; si no se envía, se inicializa en `0`.
 
-Los endpoints de autenticación aceptan `{ "email": "...", "password": "..." }` y devuelven un ID token de Firebase. Las operaciones de crear, editar y eliminar productos requieren ese token; los endpoints de lectura y pedidos siguen siendo públicos.
+El registro acepta `{ "name": "...", "email": "...", "password": "..." }`, crea la cuenta en Firebase Authentication y guarda un documento en `users/{uid}` con `name`, `email`, `role: "user"` y `createdAt`. El rol se asigna siempre en el backend. El inicio de sesión acepta `{ "email": "...", "password": "..." }`; ambos endpoints devuelven un ID token de Firebase. Las operaciones de crear, editar y eliminar productos requieren ese token; los endpoints de lectura y pedidos siguen siendo públicos.
 
 El pedido se confirma enviando `items` con `productId` y `quantity`, más una `idempotencyKey` única. El backend lee los precios y el stock actuales, descuenta inventario y registra la orden en una transacción Firestore. Si no hay stock, responde `409 Conflict` sin modificar ningún producto ni crear la orden. Reintentar con la misma clave devuelve la orden existente sin volver a descontar stock. Este flujo registra el pedido, pero no procesa pagos.
 

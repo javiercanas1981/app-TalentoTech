@@ -65,4 +65,39 @@ describe("FirebaseAuthService", () => {
       new FirebaseAuthService().verifyIdToken("expired-token"),
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
+
+  test("saves new user profiles with a non-admin default role", async () => {
+    process.env.API_KEY = "web-api-key";
+    jest.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        localId: "user-2",
+        email: "person@example.com",
+        idToken: "firebase-id-token",
+      }),
+    });
+    const service = new FirebaseAuthService({});
+    service.saveUserProfile = jest.fn().mockResolvedValue(undefined);
+
+    await expect(
+      service.register({
+        email: "person@example.com",
+        password: "password123",
+        name: "Person Example",
+        role: "admin",
+      }),
+    ).resolves.toMatchObject({
+      user: {
+        uid: "user-2",
+        email: "person@example.com",
+        displayName: "Person Example",
+      },
+    });
+
+    expect(service.saveUserProfile).toHaveBeenCalledWith("user-2", {
+      name: "Person Example",
+      email: "person@example.com",
+      role: "user",
+    });
+  });
 });

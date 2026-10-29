@@ -33,6 +33,10 @@ y Firebase Authentication. Configura las variables Firebase en
 `packages/app-talentotech-backend/.env` y habilita el proveedor Email/Password
 en Firebase Console. El frontend no necesita credenciales Firebase:
 
+El registro solicita nombre, correo y contraseña. El backend crea el usuario en
+Firebase Authentication y guarda su perfil en la colección Firestore `users`
+con rol inicial `user`.
+
 `/admin/productos` requiere iniciar sesión; el backend valida el ID token de
 Firebase y también protege las operaciones para crear, editar o eliminar
 productos.

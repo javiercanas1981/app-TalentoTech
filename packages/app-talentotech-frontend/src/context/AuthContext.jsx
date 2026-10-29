@@ -67,8 +67,8 @@ export function AuthProvider({ children }) {
   );
 
   const register = useCallback(
-    async (email, password) => {
-      const session = await registerWithApi(email, password);
+    async (email, password, name) => {
+      const session = await registerWithApi(email, password, name);
       storeIdToken(session.idToken);
       setUser(session.user);
       setAuthError("");

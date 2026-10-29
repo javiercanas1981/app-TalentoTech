@@ -1,4 +1,5 @@
 import {
+  Inject,
   ServiceUnavailableException,
   UnauthorizedException,
   ConflictException,
@@ -6,6 +7,8 @@ import {
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { FIRESTORE } from "./tokens.js";
 
 const IDENTITY_TOOLKIT_URL =
   "https://identitytoolkit.googleapis.com/v1/accounts";
@@ -69,6 +72,10 @@ const getAuthError = (code, operation) => {
 };
 
 export class FirebaseAuthService {
+  constructor(firestore) {
+    this.firestore = firestore;
+  }
+
   async request(endpoint, body, operation) {
     const apiKey = process.env.API_KEY ?? process.env.FIREBASE_API_KEY;
     if (!apiKey) {
@@ -120,13 +127,46 @@ export class FirebaseAuthService {
     return this.toSession(result);
   }
 
-  async register({ email, password }) {
+  async register({ email, password, name }) {
     const result = await this.request(
       "signUp",
       { email: email.trim(), password, returnSecureToken: true },
       "register",
     );
-    return this.toSession(result);
+    try {
+      await this.saveUserProfile(result.localId, {
+        name: name.trim(),
+        email: result.email,
+        role: "user",
+      });
+    } catch (error) {
+      try {
+        await this.request(
+          "delete",
+          { idToken: result.idToken },
+          "delete",
+        );
+      } catch (rollbackError) {
+        console.error(
+          "No se pudo revertir la cuenta de Firebase tras fallar el perfil de Firestore:",
+          rollbackError,
+        );
+      }
+
+      throw new ServiceUnavailableException(
+        "No se pudo completar el registro ni guardar el perfil en Firestore.",
+        { cause: error },
+      );
+    }
+
+    return this.toSession(result, name.trim());
+  }
+
+  saveUserProfile(uid, profile) {
+    return setDoc(doc(this.firestore, "users", uid), {
+      ...profile,
+      createdAt: serverTimestamp(),
+    });
   }
 
   async verifyIdToken(idToken) {
@@ -147,14 +187,16 @@ export class FirebaseAuthService {
     };
   }
 
-  toSession(result) {
+  toSession(result, displayName = result.displayName ?? "") {
     return {
       user: {
         uid: result.localId,
         email: result.email,
-        displayName: result.displayName ?? "",
+        displayName,
       },
       idToken: result.idToken,
     };
   }
 }
+
+Inject(FIRESTORE)(FirebaseAuthService, undefined, 0);

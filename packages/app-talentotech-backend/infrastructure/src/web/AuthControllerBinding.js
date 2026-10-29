@@ -15,6 +15,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { EmailPasswordDto } from "../../../application/src/use-cases/dtos/EmailPasswordDto.js";
+import { RegisterDto } from "../../../application/src/use-cases/dtos/RegisterDto.js";
 import { AuthController } from "./AuthController.js";
 import { FirebaseAuthGuard } from "./FirebaseAuthGuard.js";
 import { FirebaseAuthService } from "./FirebaseAuthService.js";
@@ -25,15 +26,15 @@ Controller("auth")(AuthController);
 ApiTags("Authentication")(AuthController);
 Inject(FirebaseAuthService)(AuthController, undefined, 0);
 
-for (const [name, path, operation] of [
-  ["login", "login", "Sign in with email and password"],
-  ["register", "register", "Create an account with email and password"],
+for (const [name, path, operation, dto] of [
+  ["login", "login", "Sign in with email and password", EmailPasswordDto],
+  ["register", "register", "Create an account with email and password", RegisterDto],
 ]) {
   const descriptor = Object.getOwnPropertyDescriptor(prototype, name);
   Post(path)(prototype, name, descriptor);
   Body()(prototype, name, 0);
   ApiOperation({ summary: operation })(prototype, name, descriptor);
-  ApiBody({ type: EmailPasswordDto })(prototype, name, descriptor);
+  ApiBody({ type: dto })(prototype, name, descriptor);
   ApiResponse({
     status: 200,
     description: "Authenticated Firebase user and ID token",
@@ -45,7 +46,7 @@ for (const [name, path, operation] of [
   );
   Reflect.defineMetadata(
     "design:paramtypes",
-    [EmailPasswordDto],
+    [dto],
     prototype,
     name,
   );
