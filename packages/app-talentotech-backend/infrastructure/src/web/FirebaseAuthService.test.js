@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
-import { UnauthorizedException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { FirebaseAuthService } from "./FirebaseAuthService.js";
 
 const originalApiKey = process.env.API_KEY;
@@ -25,9 +28,11 @@ describe("FirebaseAuthService", () => {
       }),
     });
     jest.spyOn(globalThis, "fetch").mockImplementation(fetchMock);
+    const service = new FirebaseAuthService({});
+    service.getUserProfile = jest.fn().mockResolvedValue({ role: "user" });
 
     await expect(
-      new FirebaseAuthService().signIn({
+      service.signIn({
         email: " person@example.com ",
         password: "password123",
       }),
@@ -36,6 +41,7 @@ describe("FirebaseAuthService", () => {
         uid: "user-1",
         email: "person@example.com",
         displayName: "",
+        role: "user",
       },
       idToken: "firebase-id-token",
     });
@@ -98,6 +104,50 @@ describe("FirebaseAuthService", () => {
       name: "Person Example",
       email: "person@example.com",
       role: "user",
+    });
+  });
+
+  test("allows only users with the admin Firestore role", async () => {
+    const service = new FirebaseAuthService({});
+    service.getUserProfile = jest
+      .fn()
+      .mockResolvedValueOnce({ role: "user" })
+      .mockResolvedValueOnce({ role: "admin" })
+      .mockResolvedValueOnce({ rol: "admin" });
+
+    await expect(service.requireAdmin({ uid: "user-1" })).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    await expect(service.requireAdmin({ uid: "admin-1" })).resolves.toBeUndefined();
+    await expect(service.requireAdmin({ uid: "legacy-admin" })).resolves.toBeUndefined();
+  });
+
+  test("returns role from the Firestore profile when verifying a token", async () => {
+    process.env.API_KEY = "web-api-key";
+    jest.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        users: [
+          {
+            localId: "admin-1",
+            email: "admin@example.com",
+          },
+        ],
+      }),
+    });
+    const service = new FirebaseAuthService({});
+    service.getUserProfile = jest.fn().mockResolvedValue({
+      name: "Site Admin",
+      rol: "admin",
+    });
+
+    await expect(
+      service.verifyIdToken("valid-token"),
+    ).resolves.toEqual({
+      uid: "admin-1",
+      email: "admin@example.com",
+      displayName: "Site Admin",
+      role: "admin",
     });
   });
 });

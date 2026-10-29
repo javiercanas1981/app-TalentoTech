@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }) {
     );
   }
 
-  if (authError) {
+  if (authError && !user) {
     return (
       <p className="auth-error" role="alert">
         {authError}
@@ -32,6 +32,14 @@ export default function ProtectedRoute({ children }) {
             location.state?.backgroundLocation ?? { pathname: "/" },
         }}
       />
+    );
+  }
+
+  if (user.role !== "admin") {
+    return (
+      <p className="auth-error" role="alert">
+        No tienes permisos de administrador para acceder al panel.
+      </p>
     );
   }
 

@@ -14,6 +14,7 @@ import { FIRESTORE } from "../../infrastructure/src/web/tokens.js";
 import { AuthController } from "../../infrastructure/src/web/AuthControllerBinding.js";
 import { FirebaseAuthGuard } from "../../infrastructure/src/web/FirebaseAuthGuard.js";
 import { FirebaseAuthService } from "../../infrastructure/src/web/FirebaseAuthService.js";
+import { AdminRoleGuard } from "../../infrastructure/src/web/AdminRoleGuard.js";
 
 export class AppModule {}
 
@@ -27,6 +28,7 @@ Module({
     FirestoreOrderRepository,
     FirebaseAuthService,
     FirebaseAuthGuard,
+    AdminRoleGuard,
     { provide: PRODUCT_REPOSITORY, useExisting: FirestoreProductRepository },
     { provide: ORDER_REPOSITORY, useExisting: FirestoreOrderRepository },
     { provide: FIRESTORE, useFactory: () => FirestoreBuilder.build() },

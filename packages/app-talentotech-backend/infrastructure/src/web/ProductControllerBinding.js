@@ -20,6 +20,7 @@ import { ProductDto } from "../../../application/src/use-cases/dtos/ProductDto.j
 import { ProductUseCase } from "../../../application/src/use-cases/ProductUseCase.js";
 import { ProductController } from "./ProductController.js";
 import { FirebaseAuthGuard } from "./FirebaseAuthGuard.js";
+import { AdminRoleGuard } from "./AdminRoleGuard.js";
 
 const prototype = ProductController.prototype;
 
@@ -81,7 +82,7 @@ bindMethod(
     ApiResponse({ status: 400, description: "Validation error" }),
   ],
 );
-UseGuards(FirebaseAuthGuard)(
+UseGuards(FirebaseAuthGuard, AdminRoleGuard)(
   prototype,
   "create",
   Object.getOwnPropertyDescriptor(prototype, "create"),
@@ -107,7 +108,7 @@ bindMethod(
     ApiResponse({ status: 404, description: "Product not found" }),
   ],
 );
-UseGuards(FirebaseAuthGuard)(
+UseGuards(FirebaseAuthGuard, AdminRoleGuard)(
   prototype,
   "update",
   Object.getOwnPropertyDescriptor(prototype, "update"),
@@ -129,7 +130,7 @@ bindMethod(
     ApiResponse({ status: 404, description: "Product not found" }),
   ],
 );
-UseGuards(FirebaseAuthGuard)(
+UseGuards(FirebaseAuthGuard, AdminRoleGuard)(
   prototype,
   "delete",
   Object.getOwnPropertyDescriptor(prototype, "delete"),

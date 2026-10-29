@@ -2,12 +2,18 @@ import {
   Inject,
   ServiceUnavailableException,
   UnauthorizedException,
+  ForbiddenException,
   ConflictException,
   BadRequestException,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { FIRESTORE } from "./tokens.js";
 
 const IDENTITY_TOOLKIT_URL =
@@ -15,6 +21,9 @@ const IDENTITY_TOOLKIT_URL =
 
 const getFirebaseErrorCode = (responseBody) =>
   responseBody?.error?.message?.split(/\s|:/, 1)[0] ?? "";
+
+const getUserRole = (profile) =>
+  (profile.role ?? profile.rol) === "admin" ? "admin" : "user";
 
 const getAuthError = (code, operation) => {
   if (
@@ -124,7 +133,8 @@ export class FirebaseAuthService {
       { email: email.trim(), password, returnSecureToken: true },
       "login",
     );
-    return this.toSession(result);
+    const profile = await this.getUserProfile(result.localId);
+    return this.toSession(result, profile);
   }
 
   async register({ email, password, name }) {
@@ -159,7 +169,26 @@ export class FirebaseAuthService {
       );
     }
 
-    return this.toSession(result, name.trim());
+    const profile = {
+      name: name.trim(),
+      email: result.email,
+      role: "user",
+    };
+    return this.toSession(result, profile);
+  }
+
+  async getUserProfile(uid) {
+    let profileSnapshot;
+    try {
+      profileSnapshot = await getDoc(doc(this.firestore, "users", uid));
+    } catch (error) {
+      throw new ServiceUnavailableException(
+        "No se pudo consultar el perfil del usuario en Firestore.",
+        { cause: error },
+      );
+    }
+
+    return profileSnapshot.exists() ? profileSnapshot.data() : {};
   }
 
   saveUserProfile(uid, profile) {
@@ -180,22 +209,38 @@ export class FirebaseAuthService {
       throw new UnauthorizedException("La sesión no es válida o ha expirado.");
     }
 
+    const profile = await this.getUserProfile(firebaseUser.localId);
     return {
       uid: firebaseUser.localId,
       email: firebaseUser.email ?? "",
-      displayName: firebaseUser.displayName ?? "",
+      displayName: profile.name ?? firebaseUser.displayName ?? "",
+      role: getUserRole(profile),
     };
   }
 
-  toSession(result, displayName = result.displayName ?? "") {
+  toSession(result, profile = {}) {
     return {
       user: {
         uid: result.localId,
         email: result.email,
-        displayName,
+        displayName: profile.name ?? result.displayName ?? "",
+        role: getUserRole(profile),
       },
       idToken: result.idToken,
     };
+  }
+
+  async requireAdmin(user) {
+    if (!user?.uid) {
+      throw new UnauthorizedException("Se requiere una sesión válida.");
+    }
+
+    const profile = await this.getUserProfile(user.uid);
+    if (getUserRole(profile) !== "admin") {
+      throw new ForbiddenException(
+        "No tienes permisos de administrador para realizar esta acción.",
+      );
+    }
   }
 }
 
