@@ -1,3 +1,5 @@
+import { getStoredIdToken } from "./AuthService";
+
 const API_URL = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/+$/, "");
 
 async function request(path, options) {
@@ -55,7 +57,12 @@ const getProduct = (productId) =>
 const createProduct = (product) =>
   request("/products", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(getStoredIdToken()
+        ? { Authorization: `Bearer ${getStoredIdToken()}` }
+        : {}),
+    },
     body: JSON.stringify(product),
   });
 
@@ -69,7 +76,12 @@ const createProduct = (product) =>
 const updateProduct = (productId, product) =>
   request(`/products/${encodeURIComponent(productId)}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(getStoredIdToken()
+        ? { Authorization: `Bearer ${getStoredIdToken()}` }
+        : {}),
+    },
     body: JSON.stringify(product),
   });
 
@@ -80,7 +92,12 @@ const updateProduct = (productId, product) =>
  * @returns {Promise<Object>} Resultado de la eliminación.
  */
 const deleteProduct = (productId) =>
-  request(`/products/${encodeURIComponent(productId)}`, { method: "DELETE" });
+  request(`/products/${encodeURIComponent(productId)}`, {
+    method: "DELETE",
+    headers: getStoredIdToken()
+      ? { Authorization: `Bearer ${getStoredIdToken()}` }
+      : {},
+  });
 
 /**
  * Confirma una compra; el backend valida el stock, lo descuenta y registra la orden.

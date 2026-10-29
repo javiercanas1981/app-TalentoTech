@@ -1,10 +1,10 @@
 # Backend
 
-API de productos con NestJS y Firestore.
+API de productos y autenticación con NestJS, Firestore y Firebase Authentication.
 
 ## Configuración
 
-En PowerShell, copia `.env.example` a `.env` con `Copy-Item .env.example .env` y reemplaza los valores de ejemplo por la configuración de una aplicación web en Firebase Console > Project settings > General. `API_KEY`, `PROJECT_ID` y `APP_ID` son obligatorios; también se aceptan sus alias `FIREBASE_*`. `.env` no se versiona. `JWT_SECRET` todavía no lo usa ningún endpoint.
+En PowerShell, copia `.env.example` a `.env` con `Copy-Item .env.example .env` y reemplaza los valores de ejemplo por la configuración de una aplicación web en Firebase Console > Project settings > General. `API_KEY`, `PROJECT_ID` y `APP_ID` son obligatorios; también se aceptan sus alias `FIREBASE_*`. `.env` no se versiona. Habilita Email/Password en Firebase Console > Authentication > Sign-in method.
 
 Ejecuta `npm install` y luego `npm run dev` desde esta carpeta. El servidor escucha en el puerto `3000` por defecto; `PORT` permite cambiarlo.
 
@@ -16,9 +16,14 @@ Ejecuta `npm install` y luego `npm run dev` desde esta carpeta. El servidor escu
 - `PUT /api/products/:id`
 - `DELETE /api/products/:id`
 - `POST /api/orders`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/session` (requiere `Authorization: Bearer <Firebase ID token>`)
 
 El cuerpo para crear y actualizar acepta `name`, `category`, `price`, `unit`, `image` y `description`; `weight`, `rating`, `reviewsCount`, `cookingTip`, `tags` e `isFeatured` son opcionales.
 `stock` es opcional y debe ser un entero mayor o igual a cero; si no se envía, se inicializa en `0`.
+
+Los endpoints de autenticación aceptan `{ "email": "...", "password": "..." }` y devuelven un ID token de Firebase. Las operaciones de crear, editar y eliminar productos requieren ese token; los endpoints de lectura y pedidos siguen siendo públicos.
 
 El pedido se confirma enviando `items` con `productId` y `quantity`, más una `idempotencyKey` única. El backend lee los precios y el stock actuales, descuenta inventario y registra la orden en una transacción Firestore. Si no hay stock, responde `409 Conflict` sin modificar ningún producto ni crear la orden. Reintentar con la misma clave devuelve la orden existente sin volver a descontar stock. Este flujo registra el pedido, pero no procesa pagos.
 

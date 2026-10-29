@@ -7,6 +7,7 @@ import {
     Param,
     Post,
     Put,
+    UseGuards,
 } from "@nestjs/common";
 import {
     ApiBody,
@@ -18,6 +19,7 @@ import {
 import { ProductDto } from "../../../application/src/use-cases/dtos/ProductDto.js";
 import { ProductUseCase } from "../../../application/src/use-cases/ProductUseCase.js";
 import { ProductController } from "./ProductController.js";
+import { FirebaseAuthGuard } from "./FirebaseAuthGuard.js";
 
 const prototype = ProductController.prototype;
 
@@ -79,6 +81,11 @@ bindMethod(
     ApiResponse({ status: 400, description: "Validation error" }),
   ],
 );
+UseGuards(FirebaseAuthGuard)(
+  prototype,
+  "create",
+  Object.getOwnPropertyDescriptor(prototype, "create"),
+);
 Reflect.defineMetadata("design:paramtypes", [ProductDto], prototype, "create");
 
 bindMethod(
@@ -100,6 +107,11 @@ bindMethod(
     ApiResponse({ status: 404, description: "Product not found" }),
   ],
 );
+UseGuards(FirebaseAuthGuard)(
+  prototype,
+  "update",
+  Object.getOwnPropertyDescriptor(prototype, "update"),
+);
 Reflect.defineMetadata(
   "design:paramtypes",
   [String, ProductDto],
@@ -117,6 +129,10 @@ bindMethod(
     ApiResponse({ status: 404, description: "Product not found" }),
   ],
 );
+UseGuards(FirebaseAuthGuard)(
+  prototype,
+  "delete",
+  Object.getOwnPropertyDescriptor(prototype, "delete"),
+);
 
 export { ProductController };
-

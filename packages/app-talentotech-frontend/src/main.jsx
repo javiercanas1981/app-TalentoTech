@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import { CartProvider } from "./context/CartProvider.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 import "./index.css";
 
 /**
@@ -10,15 +11,18 @@ import "./index.css";
  * Configura los providers globales de la aplicación:
  * - BrowserRouter: navegación y enrutamiento.
  * - CartProvider: estado global del carrito.
+ * - AuthProvider: sesión y autenticación de usuarios.
  * La aplicación se monta dentro de StrictMode para detectar
  * posibles problemas durante el desarrollo.
  */
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <CartProvider>
-        <App />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

@@ -1,5 +1,6 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useCart } from "../../context/useCart";
+import { useAuth } from "../../context/useAuth";
 import "./Header.css";
 
 /**
@@ -12,6 +13,8 @@ import "./Header.css";
  */
 function Header({ category = "" }) {
   const { totalItemCount } = useCart();
+  const { user, signOut } = useAuth();
+  const location = useLocation();
 
   return (
     <header className="header">
@@ -26,7 +29,12 @@ function Header({ category = "" }) {
         <span className="header-category">{category || "Catálogo"}</span>
         <nav className="header-navigation" aria-label="Navegación principal">
           <Link to="/#productos">Productos</Link>
-          <NavLink to="/admin/productos">Panel</NavLink>
+          <NavLink
+            to="/admin/productos"
+            state={{ backgroundLocation: location }}
+          >
+            Panel
+          </NavLink>
           <NavLink
             to="/carrito"
             className="header-cart-link"
@@ -44,6 +52,15 @@ function Header({ category = "" }) {
             </svg>
             <span>{totalItemCount}</span>
           </NavLink>
+          {user && (
+            <button
+              type="button"
+              className="header-auth-button"
+              onClick={signOut}
+            >
+              Cerrar sesión
+            </button>
+          )}
         </nav>
       </div>
     </header>

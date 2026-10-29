@@ -28,6 +28,15 @@ Utilizar javascript nativo
 
 Firebase como repositorio
 
+El inicio de sesión y registro se realizan mediante la API backend (`/api/auth`)
+y Firebase Authentication. Configura las variables Firebase en
+`packages/app-talentotech-backend/.env` y habilita el proveedor Email/Password
+en Firebase Console. El frontend no necesita credenciales Firebase:
+
+`/admin/productos` requiere iniciar sesión; el backend valida el ID token de
+Firebase y también protege las operaciones para crear, editar o eliminar
+productos.
+
 https://docs.google.com/document/d/1EHFCSNnQSr7Acvh1VcBXVvofAp7iFAc0QGeFhZf5MIc/edit?tab=t.0#heading=h.7rwef1st392x
 
 https://imgbb.com/
