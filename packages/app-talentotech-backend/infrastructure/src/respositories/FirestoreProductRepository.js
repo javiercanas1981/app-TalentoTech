@@ -1,12 +1,4 @@
 import { Inject } from "@nestjs/common";
-import {
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    setDoc,
-} from "firebase/firestore";
 import { ProductRepository } from "../../../domain/src/repositories/ProductRepository.js";
 import { ProductDbMapper } from "../db/mappers/ProductDbMapper.js";
 import { FIRESTORE } from "../di/tokens.js";
@@ -21,9 +13,7 @@ export class FirestoreProductRepository extends ProductRepository {
   }
 
   async getAll() {
-    const snapshot = await getDocs(
-      collection(this.firestore, PRODUCTS_COLLECTION),
-    );
+    const snapshot = await this.firestore.collection(PRODUCTS_COLLECTION).get();
     return snapshot.docs.map((document) =>
       productMapper.toDomain({
         ...document.data(),
@@ -33,26 +23,29 @@ export class FirestoreProductRepository extends ProductRepository {
   }
 
   async getById(id) {
-    const snapshot = await getDoc(doc(this.firestore, PRODUCTS_COLLECTION, id));
-    if (!snapshot.exists()) return null;
+    const snapshot = await this.firestore
+      .collection(PRODUCTS_COLLECTION)
+      .doc(id)
+      .get();
+    if (!snapshot.exists) return null;
     return productMapper.toDomain({ ...snapshot.data(), id: snapshot.id });
   }
 
   async create(product) {
     const entity = productMapper.toPersistence(product);
     const { id, ...data } = entity;
-    await setDoc(doc(this.firestore, PRODUCTS_COLLECTION, id), data);
+    await this.firestore.collection(PRODUCTS_COLLECTION).doc(id).set(data);
     return productMapper.toDomain(entity);
   }
 
   async update(product) {
     const entity = productMapper.toPersistence(product);
     const { id, ...data } = entity;
-    await setDoc(doc(this.firestore, PRODUCTS_COLLECTION, id), data);
+    await this.firestore.collection(PRODUCTS_COLLECTION).doc(id).set(data);
   }
 
   async delete(id) {
-    await deleteDoc(doc(this.firestore, PRODUCTS_COLLECTION, id));
+    await this.firestore.collection(PRODUCTS_COLLECTION).doc(id).delete();
   }
 }
 

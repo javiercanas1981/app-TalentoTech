@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { FieldValue } from "firebase-admin/firestore";
 import { USER_REPOSITORY } from "../../../domain/src/repositories/UserRepository.js";
 import { FIRESTORE } from "../di/tokens.js";
 import { UserRepository } from "../../../domain/src/repositories/UserRepository.js";
@@ -17,16 +17,19 @@ export class FirestoreUserRepository extends UserRepository {
   }
 
   async create(uid, profile) {
-    await setDoc(doc(this.firestore, "users", uid), {
+    await this.firestore.collection("users").doc(uid).set({
       ...profile,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
     return { uid, ...profile };
   }
 
   async getById(uid) {
-    const profileSnapshot = await getDoc(doc(this.firestore, "users", uid));
-    if (!profileSnapshot.exists()) {
+    const profileSnapshot = await this.firestore
+      .collection("users")
+      .doc(uid)
+      .get();
+    if (!profileSnapshot.exists) {
       return null;
     }
 

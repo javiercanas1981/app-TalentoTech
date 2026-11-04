@@ -1,5 +1,4 @@
 import { Inject } from "@nestjs/common";
-import { collection, doc, runTransaction } from "firebase/firestore";
 import { InsufficientStockError } from "../../../application/src/errors/InsufficientStockError.js";
 import { ProductNotFoundError } from "../../../application/src/errors/ProductNotFoundError.js";
 import { Stock } from "../../../domain/src/model/Stock.js";
@@ -17,17 +16,16 @@ export class FirestoreOrderRepository extends OrderRepository {
 
   async create(items, idempotencyKey) {
     const productReferences = items.map(({ productId }) =>
-      doc(this.firestore, PRODUCTS_COLLECTION, productId),
+      this.firestore.collection(PRODUCTS_COLLECTION).doc(productId),
     );
-    const orderReference = doc(
-      collection(this.firestore, ORDERS_COLLECTION),
-      idempotencyKey,
-    );
+    const orderReference = this.firestore
+      .collection(ORDERS_COLLECTION)
+      .doc(idempotencyKey);
     const createdAt = new Date();
 
-    return runTransaction(this.firestore, async (transaction) => {
+    return this.firestore.runTransaction(async (transaction) => {
       const existingOrderSnapshot = await transaction.get(orderReference);
-      if (existingOrderSnapshot.exists()) {
+      if (existingOrderSnapshot.exists) {
         const existingOrder = existingOrderSnapshot.data();
         const savedAt =
           typeof existingOrder.createdAt?.toDate === "function"
@@ -47,7 +45,7 @@ export class FirestoreOrderRepository extends OrderRepository {
 
       const orderItems = productSnapshots.map((snapshot, index) => {
         const requestedItem = items[index];
-        if (!snapshot.exists()) {
+        if (!snapshot.exists) {
           throw new ProductNotFoundError(requestedItem.productId);
         }
 
