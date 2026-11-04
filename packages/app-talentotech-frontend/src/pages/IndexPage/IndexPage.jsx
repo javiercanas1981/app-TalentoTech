@@ -9,12 +9,24 @@ import ItemListContainer from "../../components/ItemListContainer/ItemContainer"
  */
 function IndexPage() {
   return (
-    <div>
-      <h1>Bienvenido</h1>
-
-      <p>Catálogo de productos.</p>
-
-      <ItemListContainer />
+    <div className="catalog-page">
+      <section className="catalog-hero">
+        <div>
+          <p className="catalog-eyebrow">Calidad para tu mesa</p>
+          <h1>Bienvenido a TalentoTech</h1>
+          <p>Encontrá tus favoritos y recibí todo lo que necesitás en casa.</p>
+        </div>
+        <a className="catalog-cta" href="#productos">
+          Explorar productos
+        </a>
+      </section>
+      <section aria-labelledby="catalog-title">
+        <div className="catalog-section-heading">
+          <h2 id="catalog-title">Descubrí nuestros productos</h2>
+          <p>Elegí, agregá al carrito y comprá en pocos pasos.</p>
+        </div>
+        <ItemListContainer />
+      </section>
     </div>
   );
 }

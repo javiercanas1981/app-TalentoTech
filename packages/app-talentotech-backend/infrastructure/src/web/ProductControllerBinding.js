@@ -7,12 +7,14 @@ import {
     Param,
     Post,
     Put,
+    Query,
     UseGuards,
 } from "@nestjs/common";
 import {
     ApiBody,
     ApiOperation,
     ApiParam,
+    ApiQuery,
     ApiResponse,
     ApiTags,
 } from "@nestjs/swagger";
@@ -42,16 +44,31 @@ Inject(ProductUseCase)(ProductController, undefined, 0);
 bindMethod(
   "findAll",
   Get(),
-  [],
+  [[Query(), 0]],
   [
-    ApiOperation({ summary: "Retrieve all products" }),
+    ApiOperation({ summary: "Retrieve products, optionally paginated" }),
+    ApiQuery({
+      name: "page",
+      required: false,
+      type: Number,
+      minimum: 0,
+      description: "Zero-based page number",
+    }),
+    ApiQuery({
+      name: "size",
+      required: false,
+      type: Number,
+      minimum: 1,
+      maximum: 100,
+      description: "Number of products per page",
+    }),
     ApiResponse({
       status: 200,
-      description: "List of products",
-      type: [ProductDto],
+      description: "Product list or page when pagination parameters are used",
     }),
   ],
 );
+Reflect.defineMetadata("design:paramtypes", [Object], prototype, "findAll");
 bindMethod(
   "findById",
   Get(":id"),

@@ -42,6 +42,20 @@ describe("ProductService", () => {
     );
   });
 
+  test("requests paginated products using zero-based page parameters", async () => {
+    const pageData = {
+      content: [product],
+      totalPages: 3,
+      totalElements: 21,
+      hasNext: true,
+    };
+    const fetchMock = vi.fn().mockResolvedValueOnce(mockResponse(pageData));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getProducts({ page: 1, size: 8 })).resolves.toEqual(pageData);
+    expect(fetchMock).toHaveBeenCalledWith("/api/products?page=1&size=8", undefined);
+  });
+
   test("creates, updates, and deletes products through the API", async () => {
     const fetchMock = vi
       .fn()

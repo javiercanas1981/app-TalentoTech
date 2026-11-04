@@ -43,6 +43,42 @@ describe("FirestoreProductRepository", () => {
     ).resolves.toMatchObject({ id: "product-1", name: "Apples" });
   });
 
+  test("returns a stable page and total count from Firestore", async () => {
+    const snapshot = {
+      docs: [
+        {
+          id: "product-1",
+          data: () => ({ name: "Apples", price: 12, stock: 4 }),
+        },
+      ],
+    };
+    const pagedQuery = {
+      orderBy: jest.fn().mockReturnThis(),
+      offset: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      get: jest.fn().mockResolvedValue(snapshot),
+    };
+    const firestore = {
+      collection: jest.fn().mockReturnValue({
+        orderBy: jest.fn().mockReturnValue(pagedQuery),
+        count: jest.fn().mockReturnValue({
+          get: jest.fn().mockResolvedValue({ data: () => ({ count: 21 }) }),
+        }),
+      }),
+    };
+
+    await expect(
+      new FirestoreProductRepository(firestore).getPage(1, 10),
+    ).resolves.toMatchObject({
+      content: [{ id: "product-1", name: "Apples" }],
+      totalPages: 3,
+      totalElements: 21,
+      hasNext: true,
+    });
+    expect(pagedQuery.offset).toHaveBeenCalledWith(10);
+    expect(pagedQuery.limit).toHaveBeenCalledWith(10);
+  });
+
   test("writes product documents using Admin SDK references", async () => {
     const document = {
       set: jest.fn().mockResolvedValue(undefined),

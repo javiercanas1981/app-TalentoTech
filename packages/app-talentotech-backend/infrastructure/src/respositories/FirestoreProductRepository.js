@@ -1,4 +1,5 @@
 import { Inject } from "@nestjs/common";
+import { FieldPath } from "firebase-admin/firestore";
 import { ProductRepository } from "../../../domain/src/repositories/ProductRepository.js";
 import { ProductDbMapper } from "../db/mappers/ProductDbMapper.js";
 import { FIRESTORE } from "../di/tokens.js";
@@ -14,12 +15,34 @@ export class FirestoreProductRepository extends ProductRepository {
 
   async getAll() {
     const snapshot = await this.firestore.collection(PRODUCTS_COLLECTION).get();
-    return snapshot.docs.map((document) =>
-      productMapper.toDomain({
-        ...document.data(),
-        id: document.id,
-      }),
-    );
+    return snapshot.docs.map((document) => this.toProduct(document));
+  }
+
+  async getPage(page, size) {
+    const productsCollection = this.firestore.collection(PRODUCTS_COLLECTION);
+    const [snapshot, countSnapshot] = await Promise.all([
+      productsCollection
+        .orderBy(FieldPath.documentId())
+        .offset(page * size)
+        .limit(size)
+        .get(),
+      productsCollection.count().get(),
+    ]);
+    const totalElements = countSnapshot.data().count;
+
+    return {
+      content: snapshot.docs.map((document) => this.toProduct(document)),
+      totalPages: Math.ceil(totalElements / size),
+      totalElements,
+      hasNext: (page + 1) * size < totalElements,
+    };
+  }
+
+  toProduct(document) {
+    return productMapper.toDomain({
+      ...document.data(),
+      id: document.id,
+    });
   }
 
   async getById(id) {

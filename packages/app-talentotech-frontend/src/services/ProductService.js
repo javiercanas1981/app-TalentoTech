@@ -33,11 +33,20 @@ async function request(path, options) {
 }
 
 /**
- * Obtiene todos los productos desde la API.
+ * Obtiene productos desde la API, con paginación opcional.
  *
+ * @param {{page?: number, size?: number}} [pagination] - Página base cero y cantidad por página.
  * @returns {Promise<Array>} Lista de productos.
  */
-const getProducts = () => request("/products");
+const getProducts = (pagination) => {
+  if (!pagination) return request("/products");
+
+  const searchParams = new URLSearchParams({
+    page: String(pagination.page ?? 0),
+    size: String(pagination.size ?? 12),
+  });
+  return request(`/products?${searchParams}`);
+};
 
 /**
  * Obtiene un producto por su identificador.

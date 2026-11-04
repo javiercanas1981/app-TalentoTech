@@ -21,6 +21,16 @@ function createRepository() {
   return {
     products,
     getAll: async () => [...products.values()],
+    getPage: async (page, size) => {
+      const allProducts = [...products.values()];
+      const content = allProducts.slice(page * size, (page + 1) * size);
+      return {
+        content,
+        totalPages: Math.ceil(allProducts.length / size),
+        totalElements: allProducts.length,
+        hasNext: (page + 1) * size < allProducts.length,
+      };
+    },
     getById: async (id) => products.get(id) ?? null,
     create: async (product) => {
       products.set(product.id, product);
@@ -113,5 +123,32 @@ describe("ProductUseCase", () => {
     await expect(
       useCase.execute({ action: "get", id: "missing" }),
     ).rejects.toBeInstanceOf(ProductNotFoundError);
+  });
+
+  test("returns product pages with mapped content and metadata", async () => {
+    const repository = createRepository();
+    const useCase = new ProductUseCase(repository);
+    await useCase.execute({ action: "create", data: productInput });
+
+    await expect(
+      useCase.execute({ action: "list", data: { page: 0, size: 1 } }),
+    ).resolves.toMatchObject({
+      content: [{ name: productInput.name }],
+      totalPages: 1,
+      totalElements: 1,
+      hasNext: false,
+    });
+  });
+
+  test.each([
+    [{ page: -1, size: 10 }],
+    [{ page: 0, size: 0 }],
+    [{ page: 0, size: 101 }],
+    [{ page: 0.5, size: 10 }],
+  ])("rejects invalid pagination parameters %o", async (pagination) => {
+    const useCase = new ProductUseCase(createRepository());
+    await expect(
+      useCase.execute({ action: "list", data: pagination }),
+    ).rejects.toThrow("Pagination requires");
   });
 });

@@ -15,6 +15,25 @@ export class ProductUseCase extends IUseCase {
   async execute({ action, id, data } = {}) {
     switch (action) {
       case "list":
+        if (data) {
+          const { page, size } = data;
+          if (
+            !Number.isInteger(page) ||
+            page < 0 ||
+            !Number.isInteger(size) ||
+            size < 1 ||
+            size > 100
+          ) {
+            throw new TypeError(
+              "Pagination requires a non-negative page and a size between 1 and 100",
+            );
+          }
+          const result = await this.productRepository.getPage(page, size);
+          return {
+            ...result,
+            content: result.content.map(ProductMapper.toDto),
+          };
+        }
         return (await this.productRepository.getAll()).map(ProductMapper.toDto);
       case "get": {
         const product = await this.productRepository.getById(

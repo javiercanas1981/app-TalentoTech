@@ -13,6 +13,7 @@ Ejecuta `npm install` y luego `npm run dev` desde esta carpeta. El servidor escu
 ## API de productos
 
 - `GET /api/products`
+- `GET /api/products?page=0&size=12` (paginado, índice de página desde cero; tamaño máximo: 100)
 - `GET /api/products/:id`
 - `POST /api/products`
 - `PUT /api/products/:id`
@@ -24,6 +25,7 @@ Ejecuta `npm install` y luego `npm run dev` desde esta carpeta. El servidor escu
 
 El cuerpo para crear y actualizar acepta `name`, `category`, `price`, `unit`, `image` y `description`; `weight`, `rating`, `reviewsCount`, `cookingTip`, `tags` e `isFeatured` son opcionales.
 `stock` es opcional y debe ser un entero mayor o igual a cero; si no se envía, se inicializa en `0`.
+La solicitud paginada devuelve `{ "content": [], "totalPages": 0, "totalElements": 0, "hasNext": false }`. Para mantener compatibilidad, `GET /api/products` sin parámetros continúa devolviendo el arreglo completo.
 
 El registro acepta `{ "name": "...", "email": "...", "password": "..." }`, crea la cuenta en Firebase Authentication y guarda un documento en `users/{uid}` con `name`, `email`, `role: "user"` y `createdAt`. El rol se asigna siempre en el backend. Para otorgar acceso administrativo, cambia manualmente el campo `role` del documento correspondiente a `admin` desde Firebase Console; por compatibilidad, la autorización también reconoce el campo existente `rol`. Nunca aceptes un rol desde el formulario ni desde una petición pública.
 
