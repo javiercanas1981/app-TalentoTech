@@ -42,6 +42,7 @@ function RegisterForm() {
         <input
           id="register-name"
           type="text"
+          placeholder="Ingresa tu nombre"
           autoComplete="name"
           value={name}
           onChange={(event) => setName(event.target.value)}
@@ -51,6 +52,7 @@ function RegisterForm() {
         <input
           id="register-email"
           type="email"
+          placeholder="nombre@ejemplo.com"
           autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -60,6 +62,7 @@ function RegisterForm() {
         <input
           id="register-password"
           type="password"
+          placeholder="Mínimo 6 caracteres"
           autoComplete="new-password"
           minLength={6}
           value={password}
