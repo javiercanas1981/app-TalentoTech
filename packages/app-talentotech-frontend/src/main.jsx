@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { CartProvider } from "./context/CartProvider.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import "./index.css";
+import "./theme.css";
 
 /**
  * Punto de entrada de la aplicación React.

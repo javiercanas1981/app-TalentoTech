@@ -18,14 +18,14 @@ function Header({ category = "" }) {
 
   return (
     <header className="header">
-      <Link to="/" className="header-logo-link" aria-label="Ir al catálogo">
-        <img
-          src="/assets/logo_transparent.png"
-          alt="Logo de la aplicación"
-          className="header-logo-img"
-        />
-      </Link>
       <div className="header-content">
+        <Link to="/" className="header-logo-link" aria-label="Ir al catálogo">
+          <img
+            src="/assets/logo_transparent.png"
+            alt="Logo de la aplicación"
+            className="header-logo-img"
+          />
+        </Link>
         <span className="header-category">{category || "Catálogo"}</span>
         <nav className="header-navigation" aria-label="Navegación principal">
           <Link to="/#productos">Productos</Link>
