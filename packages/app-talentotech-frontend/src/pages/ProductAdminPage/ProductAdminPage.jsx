@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
+import { useNotification } from "../../context/useNotification";
 import ProductForm from "../../components/ProductForm/ProductForm";
 import ProductTable from "../../components/ProductTable/ProductTable";
-import { notificationService } from "../../services/NotificationService";
 import {
   createProduct,
   deleteProduct,
@@ -23,6 +23,7 @@ import {
  */
 function ProductAdminPage() {
   const { setHeaderCategory } = useOutletContext();
+  const { showError, showSuccess } = useNotification();
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [reloadVersion, setReloadVersion] = useState(0);
@@ -43,10 +44,10 @@ function ProductAdminPage() {
     try {
     if (editingProduct) {
       await updateProduct(editingProduct.id, product);
-      notificationService.showSuccess("Producto actualizado correctamente.");
+      showSuccess("Producto actualizado correctamente.");
     } else {
       await createProduct(product);
-      notificationService.showSuccess("Producto creado correctamente.");
+      showSuccess("Producto creado correctamente.");
     }
 
     setReloadVersion((version) => version + 1);
@@ -55,22 +56,18 @@ function ProductAdminPage() {
     setHeaderCategory("");
     } catch (error) {
     console.error("Error guardando producto:", error);
-    notificationService.showError(
-      `No se pudo guardar el producto. ${error.message}`,
-    );
+    showError(`No se pudo guardar el producto. ${error.message}`);
     }
   };
 
   const handleDelete = async (id) => {
     try {
     await deleteProduct(id);
-    notificationService.showSuccess("Producto eliminado correctamente.");
+    showSuccess("Producto eliminado correctamente.");
     setReloadVersion((version) => version + 1);
     } catch (error) {
     console.error("Error eliminando producto:", error);
-    notificationService.showError(
-      `No se pudo eliminar el producto. ${error.message}`,
-    );
+    showError(`No se pudo eliminar el producto. ${error.message}`);
     }
   };
 

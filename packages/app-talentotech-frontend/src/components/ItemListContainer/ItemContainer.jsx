@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { notificationService } from "../../services/NotificationService";
+import { useNotification } from "../../context/useNotification";
 import { getProducts } from "../../services/ProductService";
 import Item from "../Item/Item";
 import "./ItemContainer.css";
@@ -24,6 +24,7 @@ function ItemContainer() {
   });
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { showError } = useNotification();
 
   useEffect(() => {
     let active = true;
@@ -33,7 +34,7 @@ function ItemContainer() {
       })
       .catch((error) => {
         console.error("Error cargando productos:", error);
-        notificationService.showError("No se pudieron cargar los productos.");
+        showError("No se pudieron cargar los productos.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -41,7 +42,7 @@ function ItemContainer() {
     return () => {
       active = false;
     };
-  }, [page]);
+  }, [page, showError]);
 
   const changePage = (nextPage) => {
     setLoading(true);

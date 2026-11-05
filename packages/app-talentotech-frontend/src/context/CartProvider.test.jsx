@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { CartProvider } from "./CartProvider";
+import { NotificationProvider } from "./NotificationProvider";
 import { useCart } from "./useCart";
 
 function CartActions({ product }) {
@@ -22,9 +23,11 @@ describe("CartProvider stock limits", () => {
     const product = { id: "product-1", stock: 2 };
 
     render(
-      <CartProvider>
-        <CartActions product={product} />
-      </CartProvider>,
+      <NotificationProvider>
+        <CartProvider>
+          <CartActions product={product} />
+        </CartProvider>
+      </NotificationProvider>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Agregar" }));

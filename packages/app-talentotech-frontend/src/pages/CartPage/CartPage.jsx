@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCart } from "../../context/useCart";
-import { notificationService } from "../../services/NotificationService";
+import { useNotification } from "../../context/useNotification";
 import { createOrder } from "../../services/ProductService";
 import "./CartPage.css";
 
@@ -20,6 +20,7 @@ import "./CartPage.css";
 function CartPage() {
   const { items, subtotal, removeFromCart, clearCart, updateQuantity } =
     useCart();
+  const { showError, showSuccess } = useNotification();
   const [checkoutPending, setCheckoutPending] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
   const [checkoutAttempt, setCheckoutAttempt] = useState(null);
@@ -48,14 +49,10 @@ function CartPage() {
       clearCart();
       setCheckoutAttempt(null);
       setConfirmedOrder(order);
-      notificationService.showSuccess(
-        `Pedido registrado. Número de orden: ${order.id}`,
-      );
+      showSuccess(`Pedido registrado. Número de orden: ${order.id}`);
     } catch (error) {
       console.error("Error confirmando la compra:", error);
-      notificationService.showError(
-        `No se pudo confirmar la compra. ${error.message}`,
-      );
+      showError(`No se pudo confirmar la compra. ${error.message}`);
       if ([400, 404, 409].includes(error.status)) {
         setCheckoutAttempt(null);
       } else {

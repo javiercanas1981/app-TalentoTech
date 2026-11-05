@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { useCart } from "../../context/useCart";
-import { notificationService } from "../../services/NotificationService";
+import { useNotification } from "../../context/useNotification";
 import { getProduct } from "../../services/ProductService";
 import "./ProductDetailPage.css";
 
@@ -18,6 +18,7 @@ function ProductDetailPage() {
 
   const { id } = useParams();
   const { setHeaderCategory } = useOutletContext();
+  const { showError } = useNotification();
 
   const [product, setProduct] = useState(null);
 
@@ -48,9 +49,7 @@ function ProductDetailPage() {
             setProduct(null);
             setHeaderCategory("");
             setLoader(false);
-            notificationService.showError(
-              "No se pudieron cargar los productos.",
-            );
+            showError("No se pudieron cargar los productos.");
           }
         });
     }, 800);
@@ -59,7 +58,7 @@ function ProductDetailPage() {
       active = false;
       clearTimeout(timer);
     };
-  }, [id, setHeaderCategory]);
+  }, [id, setHeaderCategory, showError]);
 
   if (!product && !loader) {
     return <p className="product-detail-loading">Producto no encontrado.</p>;

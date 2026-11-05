@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { notificationService } from "../../services/NotificationService";
+import { useNotification } from "../../context/useNotification";
 import { getProducts } from "../../services/ProductService";
 import "./ProductTable.css";
 
@@ -20,6 +20,7 @@ import "./ProductTable.css";
 function ProductTable({ onNew, onEdit, onDelete }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showError } = useNotification();
 
   useEffect(() => {
     let active = true;
@@ -31,9 +32,7 @@ function ProductTable({ onNew, onEdit, onDelete }) {
       .catch((error) => {
         console.error(error);
         if (active) {
-          notificationService.showError(
-            `No se pudieron cargar los productos. ${error.message}`,
-          );
+          showError(`No se pudieron cargar los productos. ${error.message}`);
         }
       })
       .finally(() => {
@@ -42,7 +41,7 @@ function ProductTable({ onNew, onEdit, onDelete }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [showError]);
 
   const handleDelete = (id) => {
     onDelete(id);

@@ -6,6 +6,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { CartProvider } from "../../context/CartProvider";
+import { NotificationProvider } from "../../context/NotificationProvider";
 import { useCart } from "../../context/useCart";
 import { createOrder } from "../../services/ProductService";
 import CartPage from "./CartPage";
@@ -31,10 +32,12 @@ function AddProduct() {
 
 function renderCart() {
   return render(
-    <CartProvider>
-      <AddProduct />
-      <CartPage />
-    </CartProvider>,
+    <NotificationProvider>
+      <CartProvider>
+        <AddProduct />
+        <CartPage />
+      </CartProvider>
+    </NotificationProvider>,
   );
 }
 

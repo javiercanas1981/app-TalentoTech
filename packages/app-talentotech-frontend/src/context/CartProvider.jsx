@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CartContext } from "./CartContext";
-import { notificationService } from "../services/NotificationService";
+import { useNotification } from "./useNotification";
 
 const productStock = (product) =>
   Number.isInteger(product?.stock) && product.stock >= 0 ? product.stock : 0;
@@ -17,6 +17,7 @@ const productStock = (product) =>
 
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState([]);
+  const { showError, showWarning } = useNotification();
 
   /**
    * Agrega un producto al carrito.
@@ -27,12 +28,12 @@ export const CartProvider = ({ children }) => {
    */
   const addToCart = (product, quantity = 1) => {
     if (!product?.id || !Number.isInteger(quantity) || quantity <= 0) {
-      notificationService.showError("La cantidad a agregar no es válida.");
+      showError("La cantidad a agregar no es válida.");
       return false;
     }
 
     if (quantity > getAvailableStock(product)) {
-      notificationService.showWarning("No hay suficiente stock disponible.");
+      showWarning("No hay suficiente stock disponible.");
       return false;
     }
 
@@ -94,13 +95,13 @@ export const CartProvider = ({ children }) => {
     }
 
     if (!Number.isInteger(quantity)) {
-      notificationService.showError("La cantidad debe ser un número entero.");
+      showError("La cantidad debe ser un número entero.");
       return false;
     }
 
     const item = items.find((cartItem) => cartItem.product.id === productId);
     if (item && quantity > productStock(item.product)) {
-      notificationService.showWarning("No hay suficiente stock disponible.");
+      showWarning("No hay suficiente stock disponible.");
       return false;
     }
 
