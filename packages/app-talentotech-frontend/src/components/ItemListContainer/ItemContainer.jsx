@@ -15,7 +15,14 @@ const PAGE_SIZE = 8;
  *
  * @returns {JSX.Element} Grilla con los productos disponibles.
  */
-function ItemContainer() {
+function normalizeSearchText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase();
+}
+
+function ItemContainer({ searchTerm = "" }) {
   const [pageData, setPageData] = useState({
     content: [],
     totalPages: 0,
@@ -28,7 +35,29 @@ function ItemContainer() {
 
   useEffect(() => {
     let active = true;
-    getProducts({ page, size: PAGE_SIZE })
+    const request = searchTerm
+      ? getProducts().then((products) => {
+          const normalizedTerm = normalizeSearchText(searchTerm);
+          const content = products.filter((product) =>
+            [
+              product.name,
+              product.category,
+              product.description,
+              ...(product.tags ?? []),
+            ]
+              .map(normalizeSearchText)
+              .some((value) => value.includes(normalizedTerm)),
+          );
+          return {
+            content,
+            totalPages: 1,
+            totalElements: content.length,
+            hasNext: false,
+          };
+        })
+      : getProducts({ page, size: PAGE_SIZE });
+
+    request
       .then((data) => {
         if (active) setPageData(data);
       })
@@ -42,7 +71,7 @@ function ItemContainer() {
     return () => {
       active = false;
     };
-  }, [page, showError]);
+  }, [page, searchTerm, showError]);
 
   const changePage = (nextPage) => {
     setLoading(true);
@@ -56,10 +85,14 @@ function ItemContainer() {
           <Item key={product.id} product={product} />
         ))}
         {!loading && pageData.totalElements === 0 && (
-          <p className="product-grid-empty">No hay productos disponibles.</p>
+          <p className="product-grid-empty">
+            {searchTerm
+              ? `No se encontraron productos para "${searchTerm}".`
+              : "No hay productos disponibles."}
+          </p>
         )}
       </div>
-      {pageData.totalPages > 1 && (
+      {!searchTerm && pageData.totalPages > 1 && (
         <nav className="pagination" aria-label="Paginación de productos">
           <button
             type="button"
